@@ -3,509 +3,664 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shadow AI — Premium Digital & AI Studio</title>
-<meta name="description" content="Shadow AI is an award-winning digital creative agency crafting world-class UI/UX, web development, branding, motion design, and AI solutions.">
-
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          ink: '#020617',
-          panel: '#0f172a',
-          blue: '#6366f1',
-          violet: '#a855f7',
-          cyan: '#818cf8',
-        },
-        fontFamily: {
-          display: ['"Space Grotesk"', 'sans-serif'],
-          body: ['"Inter"', 'sans-serif']
-        }
-      }
-    }
-  }
-</script>
-
-<!-- Google Fonts -->
+<title>Shadow Tech AI - Engineering the Intelligence of Tomorrow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<!-- GSAP & Three.js & Lenis -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lenis/1.1.13/lenis.min.js"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink: #020617;
-    --panel: #0f172a;
-    --blue: #6366f1;
-    --violet: #a855f7;
-    --line: rgba(148, 163, 184, 0.15);
-  }
-  * { box-sizing: border-box; }
-  html { background: var(--ink); scroll-behavior: smooth; }
-  body {
-    background: var(--ink);
-    color: #f8fafc;
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
-  }
-  h1, h2, h3, h4, .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; }
-  ::selection { background: var(--blue); color: #fff; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--dark:#030308;--dark2:#0a0a14;--cyan:#00e5ff;--blue:#0066ff;
+--purple:#8b5cf6;--pink:#ff0080;--glass:rgba(255,255,255,0.03);
+--glass-border:rgba(255,255,255,0.08);--text:#fff;--text-dim:rgba(255,255,255,0.6);
+--glow-cyan:0 0 30px rgba(0,229,255,0.4);--glow-purple:0 0 30px rgba(139,92,246,0.4);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden;line-height:1.6}
+body.loading{overflow:hidden}
+@media (hover:hover) and (pointer:fine){
+  body,a,button,input,textarea,.service-card,.platform-card,.pricing-card,.blog-card,.portfolio-card,.chat-toggle,.back-to-top,.filter-tab{cursor:none!important}
+}
+body.loading .loader{opacity:1;pointer-events:all}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--dark)}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan),var(--purple));border-radius:4px}
 
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: var(--ink); }
-  ::-webkit-scrollbar-thumb { background: linear-gradient(var(--blue), var(--violet)); border-radius: 10px; }
+/* Loader */
+.loader{position:fixed;inset:0;z-index:10000;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;transition:opacity .5s;pointer-events:none}
+.loader-ring{width:60px;height:60px;border:2px solid transparent;border-top-color:var(--cyan);border-radius:50%;animation:spin 1s linear infinite}
+.loader-ring::before,.loader-ring::after{content:'';position:absolute;border inherit;border-radius:inherit}
+.loader-ring::before{inset:6px;border-top-color:var(--purple);animation-duration:.8s}
+.loader-ring::after{inset:12px;border-top-color:var(--pink);animation-duration:1.2s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{margin-top:24px;font-size:14px;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase}
 
-  /* Custom Cursor */
-  #cursor-dot, #cursor-ring {
-    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
-    border-radius: 50%; transform: translate(-50%, -50%);
-  }
-  #cursor-dot { width: 6px; height: 6px; background: #fff; }
-  #cursor-ring {
-    width: 36px; height: 36px; border: 1px solid rgba(255, 255, 255, .4);
-    transition: width .25s, height .25s, border-color .25s, background .25s;
-  }
-  #cursor-ring.hovered { width: 64px; height: 64px; background: rgba(99, 102, 241, .15); border-color: var(--blue); }
-  @media (max-width: 768px) { #cursor-dot, #cursor-ring { display: none; } }
+/* Canvas */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-  /* Glass Effects & Bento Grid Styles */
-  .glass {
-    background: rgba(15, 23, 42, 0.65);
-    border: 1px solid rgba(30, 41, 59, 1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-  .glass-card:hover {
-    border-color: rgba(99, 102, 241, 0.5);
-    box-shadow: 0 0 35px rgba(99, 102, 241, 0.15);
-  }
+/* Layout */
+.container{max-width:1400px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
 
-  /* Gradient Text */
-  .text-gradient {
-    background: linear-gradient(90deg, #ffffff 10%, #818cf8 50%, #c084fc 90%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .text-gradient-alt {
-    background: linear-gradient(135deg, #6366f1, #818cf8, #a855f7);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
+/* Navigation */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:20px 0;transition:all .4s}
+.nav.scrolled{background:rgba(3,3,8,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;padding:0 24px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-0.5px}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px}
+.logo span{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .3s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width .3s}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-cta{background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--dark);padding:10px 24px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;transition:all .3s;box-shadow:var(--glow-cyan)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,229,255,0.6)}
+.mobile-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px}
+.mobile-toggle span{width:24px;height:2px;background:var(--text);transition:all .3s}
 
-  /* Aurora Background */
-  .aurora { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .45; will-change: transform; }
+/* Hero */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;padding-top:80px;overflow:hidden}
+.hero-content{position:relative;z-index:2;max-width:700px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--glass-border);padding:8px 16px;border-radius:50px;font-size:13px;color:var(--cyan);margin-bottom:24px;backdrop-filter:blur(10px)}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(40px,6vw,72px);font-weight:900;line-height:1.1;letter-spacing:-2px;margin-bottom:24px}
+.hero h1 .gradient{background:linear-gradient(135deg,var(--cyan) 0%,var(--purple) 50%,var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:18px;color:var(--text-dim);max-width:540px;margin-bottom:40px;line-height:1.7}
+.hero-buttons{display:flex;gap:16px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:16px 32px;border-radius:12px;font-weight:600;font-size:15px;text-decoration:none;transition:all .3s;cursor:pointer;border:none;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--dark);box-shadow:var(--glow-cyan)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 50px rgba(0,229,255,0.7)}
+.btn-secondary{background:transparent;border:1px solid var(--cyan);color:var(--cyan)}
+.btn-secondary:hover{background:rgba(0,229,255,0.1);box-shadow:var(--glow-cyan)}
+.hero-stats{display:flex;gap:48px;margin-top:64px;padding-top:40px;border-top:1px solid var(--glass-border)}
+.stat-num{font-size:36px;font-weight:800;background:linear-gradient(var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:13px;color:var(--text-dim);margin-top:4px}
+.hero-visual{position:absolute;right:-10%;top:50%;transform:translateY(-50%);width:55vw;height:55vw;max-width:800px;max-height:800px;pointer-events:auto;z-index:1}
 
-  /* Buttons */
-  .btn-primary { background: linear-gradient(90deg, #6366f1, #a855f7); position: relative; overflow: hidden; transition: 0.3s; }
-  .btn-primary:hover { box-shadow: 0 0 25px rgba(99, 102, 241, 0.4); transform: translateY(-2px); }
-  .btn-outline { border: 1px solid rgba(30, 41, 59, 1); background: rgba(15, 23, 42, 0.5); transition: .3s; }
-  .btn-outline:hover { border-color: #6366f1; box-shadow: 0 0 25px rgba(99, 102, 241, .25); transform: translateY(-2px); }
+/* Section styling */
+section{padding:120px 0;position:relative}
+.section-badge{display:inline-flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--glass-border);padding:8px 16px;border-radius:50px;font-size:12px;color:var(--purple);margin-bottom:16px;text-transform:uppercase;letter-spacing:2px}
+.section-title{font-size:clamp(32px,4vw,48px);font-weight:800;margin-bottom:16px;letter-spacing:-1px}
+.section-sub{font-size:17px;color:var(--text-dim);max-width:600px}
+.section-header{margin-bottom:64px}
 
-  /* Nav link */
-  .nav-link { position: relative; }
-  .nav-link::after {
-    content: ''; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px;
-    background: linear-gradient(90deg, var(--blue), var(--violet)); transition: width .3s ease;
-  }
-  .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+/* Services */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.service-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;padding:32px;backdrop-filter:blur(20px);transition:all .4s;position:relative;overflow:hidden;cursor:pointer}
+.service-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(0,229,255,0.05));opacity:0;transition:opacity .4s}
+.service-card:hover{transform:translateY(-8px);border-color:rgba(0,229,255,0.3);box-shadow:0 20px 60px rgba(0,0,0,0.5),var(--glow-cyan)}
+.service-card:hover::before{opacity:1}
+.service-icon{width:56px;height:56px;background:linear-gradient(135deg,rgba(0,229,255,0.15),rgba(139,92,246,0.15));border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:24px;transition:all .4s}
+.service-card:hover .service-icon{background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:var(--glow-cyan)}
+.service-card h3{font-size:20px;font-weight:700;margin-bottom:12px}
+.service-card p{font-size:14px;color:var(--text-dim);line-height:1.7;margin-bottom:20px}
+.service-link{color:var(--cyan);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:gap .3s}
+.service-card:hover .service-link{gap:12px}
 
-  /* Project Cards */
-  .tilt-card { transform-style: preserve-3d; transition: transform .15s ease-out; }
-  .project-card { position: relative; overflow: hidden; border-radius: 1.5rem; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-  .project-card img { transition: transform 0.8s cubic-bezier(.16, 1, .3, 1); }
-  .project-card:hover img { transform: scale(1.08); }
-  .project-overlay {
-    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
-    background: linear-gradient(180deg, rgba(2,6,23,0) 20%, rgba(2,6,23,.95) 100%);
-    opacity: 0; transition: opacity .4s ease;
-  }
-  .project-card:hover .project-overlay { opacity: 1; }
-  .project-actions { transform: translateY(20px); opacity: 0; transition: all .4s ease .05s; }
-  .project-card:hover .project-actions { transform: translateY(0); opacity: 1; }
+/* Platform */
+.platform{background:linear-gradient(180deg,transparent,rgba(10,10,20,0.5),transparent)}
+.platform-search{display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap}
+.search-box{flex:1;min-width:280px;position:relative}
+.search-box input{width:100%;background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:16px 20px 16px 48px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--cyan);box-shadow:var(--glow-cyan)}
+.search-box input::placeholder{color:var(--text-dim)}
+.search-box svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-dim)}
+.filter-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.filter-tab{padding:10px 20px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;font-size:13px;color:var(--text-dim);cursor:pointer;transition:all .3s}
+.filter-tab:hover,.filter-tab.active{background:linear-gradient(135deg,rgba(0,229,255,0.15),rgba(139,92,246,0.15));border-color:var(--cyan);color:var(--text)}
+.platform-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.platform-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:24px;backdrop-filter:blur(20px);transition:all .4s;cursor:pointer}
+.platform-card:hover{transform:translateY(-4px);border-color:var(--purple);box-shadow:var(--glow-purple)}
+.platform-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.platform-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--purple),var(--pink));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.platform-tag{background:rgba(139,92,246,0.2);color:var(--purple);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
+.platform-card h4{font-size:17px;font-weight:700;margin-bottom:8px}
+.platform-card p{font-size:13px;color:var(--text-dim);line-height:1.6}
+.platform-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid var(--glass-border)}
+.platform-meta{font-size:12px;color:var(--text-dim)}
+.platform-btn{color:var(--cyan);font-size:13px;font-weight:600}
 
-  /* Marquee */
-  .marquee-track { display: flex; width: max-content; animation: marquee 28s linear infinite; }
-  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;align-items:start}
+.pricing-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:40px;backdrop-filter:blur(20px);transition:all .4s;position:relative}
+.pricing-card.featured{transform:scale(1.05);border-color:var(--cyan);background:linear-gradient(135deg,rgba(0,229,255,0.08),rgba(139,92,246,0.08))}
+.pricing-card.featured::before{content:'';position:absolute;inset:-1px;background:linear-gradient(135deg,var(--cyan),var(--purple),var(--pink));border-radius:inherit;z-index:-1;animation:borderGlow 3s linear infinite}
+@keyframes borderGlow{0%,100%{opacity:.5}50%{opacity:1}}
+.pricing-card:hover{transform:translateY(-8px)}
+.pricing-card.featured:hover{transform:scale(1.05) translateY(-8px)}
+.pricing-badge{background:linear-gradient(135deg,var(--cyan),var(--purple));color:var(--dark);padding:6px 14px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;display:inline-block;margin-bottom:20px}
+.pricing-card h3{font-size:24px;font-weight:700;margin-bottom:8px}
+.pricing-card .price{font-size:48px;font-weight:900;margin-bottom:8px}
+.pricing-card .price span{font-size:16px;color:var(--text-dim);font-weight:400}
+.pricing-card .desc{font-size:14px;color:var(--text-dim);margin-bottom:32px}
+.pricing-features{list-style:none;margin-bottom:32px}
+.pricing-features li{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:14px;color:var(--text-dim);border-bottom:1px solid var(--glass-border)}
+.pricing-features li::before{content:'✓';color:var(--cyan);font-weight:700}
+.pricing-card .btn{width:100%;justify-content:center}
+.pricing-card.featured .btn{background:linear-gradient(135deg,var(--cyan),var(--purple));color:var(--dark)}
 
-  /* Preloader */
-  #preloader {
-    position: fixed; inset: 0; background: #020617; z-index: 99999;
-    display: flex; align-items: center; justify-content: center; flex-direction: column;
-  }
-  #preloader .bar { width: 240px; height: 2px; background: rgba(255, 255, 255, .1); overflow: hidden; margin-top: 18px; border-radius: 2px; }
-  #preloader .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue), var(--violet)); }
+/* Portfolio */
+.portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:24px}
+.portfolio-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;overflow:hidden;transition:all .4s}
+.portfolio-card:hover{transform:translateY(-8px);box-shadow:0 30px 80px rgba(0,0,0,0.5)}
+.portfolio-visual{height:200px;background:linear-gradient(135deg,var(--dark2),var(--dark));position:relative;overflow:hidden}
+.portfolio-visual::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,229,255,0.1),rgba(139,92,246,0.1))}
+.portfolio-visual .mini-chart{position:absolute;inset:20px;background:rgba(0,0,0,0.3);border-radius:12px;border:1px solid var(--glass-border)}
+.portfolio-content{padding:28px}
+.portfolio-content h4{font-size:20px;font-weight:700;margin-bottom:8px}
+.portfolio-content p{font-size:14px;color:var(--text-dim);margin-bottom:20px}
+.portfolio-stats{display:flex;gap:24px}
+.portfolio-stat .num{font-size:22px;font-weight:800;background:linear-gradient(var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.portfolio-stat .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
 
-  /* Scroll Progress */
-  #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--blue), var(--violet)); z-index: 9998; }
+/* Blog */
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
+.blog-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;transition:all .4s;cursor:pointer}
+.blog-card:hover{transform:translateY(-6px);border-color:var(--purple);box-shadow:var(--glow-purple)}
+.blog-image{height:180px;background:linear-gradient(135deg,var(--dark2),var(--dark));position:relative}
+.blog-image::after{content:'AI';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;font-weight:900;opacity:.1}
+.blog-content{padding:24px}
+.blog-meta{display:flex;align-items:center;gap:16px;margin-bottom:12px;font-size:12px;color:var(--text-dim)}
+.blog-meta span{display:flex;align-items:center;gap:4px}
+.blog-content h4{font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.4}
+.blog-content p{font-size:14px;color:var(--text-dim);line-height:1.6}
 
-  /* FAQ */
-  .faq-item .faq-answer { max-height: 0; overflow: hidden; transition: max-height .4s ease, padding .4s ease; }
-  .faq-item.open .faq-answer { max-height: 300px; }
-  .faq-item .faq-icon { transition: transform .35s ease; }
-  .faq-item.open .faq-icon { transform: rotate(45deg); }
+/* Contact */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.contact-form{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:40px;backdrop-filter:blur(20px)}
+.form-group{margin-bottom:24px;position:relative}
+.form-group input,.form-group textarea{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;padding:16px 20px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:all .3s;resize:none}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--cyan);box-shadow:var(--glow-cyan)}
+.form-group label{position:absolute;left:20px;top:-10px;background:var(--dark);padding:0 8px;font-size:12px;color:var(--cyan);font-weight:500}
+.contact-info h3{font-size:28px;font-weight:700;margin-bottom:24px}
+.contact-info p{color:var(--text-dim);margin-bottom:32px;line-height:1.7}
+.contact-methods{display:flex;flex-direction:column;gap:20px}
+.contact-method{display:flex;align-items:center;gap:16px}
+.contact-method-icon{width:48px;height:48px;background:linear-gradient(135deg,rgba(0,229,255,0.15),rgba(139,92,246,0.15));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.contact-method h5{font-size:14px;font-weight:600;margin-bottom:2px}
+.contact-method p{font-size:13px;color:var(--text-dim)}
+.social-links{display:flex;gap:12px;margin-top:32px}
+.social-link{width:44px;height:44px;background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);text-decoration:none;transition:all .3s}
+.social-link:hover{background:var(--cyan);color:var(--dark);border-color:var(--cyan)}
 
-  /* Modal Drawer */
-  #caseStudyModal { opacity: 0; pointer-events: none; transition: opacity .3s ease; }
-  #caseStudyModal.show { opacity: 1; pointer-events: auto; }
-  #caseStudyModal .modal-content { transform: scale(0.95) translateY(20px); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-  #caseStudyModal.show .modal-content { transform: scale(1) translateY(0); }
+/* Footer */
+.footer{background:var(--dark2);border-top:1px solid var(--glass-border);padding:80px 0 40px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:64px}
+.footer-brand .logo{margin-bottom:16px}
+.footer-brand p{color:var(--text-dim);font-size:14px;line-height:1.7;max-width:300px}
+.footer-col h5{font-size:14px;font-weight:700;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:12px}
+.footer-col a{color:var(--text-dim);text-decoration:none;font-size:14px;transition:color .3s}
+.footer-col a:hover{color:var(--cyan)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:40px;border-top:1px solid var(--glass-border);font-size:13px;color:var(--text-dim)}
 
-  /* Filter buttons active state */
-  .filter-btn.active { background: linear-gradient(90deg, var(--blue), var(--violet)); border-color: transparent; color: #fff; }
+/* Scroll Progress */
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));z-index:9999;transition:width .1s}
 
-  canvas#bg-canvas { position: fixed; inset: 0; z-index: 0; opacity: 0.65; pointer-events: none; }
-  .section-pad { padding-top: 6.5rem; padding-bottom: 6.5rem; }
-  .clip-eyebrow { letter-spacing: .25em; text-transform: uppercase; font-size: .72rem; color: #9ca3af; }
+/* Back to Top */
+.back-to-top{position:fixed;bottom:30px;right:30px;width:50px;height:50px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;visibility:hidden;transition:all .3s;z-index:999;box-shadow:var(--glow-cyan)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:translateY(-4px)}
+
+/* Animations */
+.reveal{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.fade-in{animation:fadeIn .8s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.stagger-1{animation-delay:.1s}
+.stagger-2{animation-delay:.2s}
+.stagger-3{animation-delay:.3s}
+.stagger-4{animation-delay:.4s}
+
+/* Custom Cursor */
+.cursor{width:20px;height:20px;border:2px solid var(--cyan);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:opacity .2s;width .2s,height .2s,border-color .2s;mix-blend-mode:difference;opacity:0;will-change:transform}
+.cursor-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:opacity .2s;opacity:0;will-change:transform}
+.cursor.hover{width:40px;height:40px;border-color:var(--purple)}
+
+/* Mobile Nav */
+.mobile-nav{position:fixed;inset:0;background:rgba(3,3,8,0.98);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;opacity:0;visibility:hidden;transition:all .4s}
+.mobile-nav.open{opacity:1;visibility:visible}
+.mobile-nav a{color:var(--text);text-decoration:none;font-size:24px;font-weight:600}
+
+/* Responsive */
+@media(max-width:1024px){
+.hero-visual{right:-20%;opacity:.4}
+.footer-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+.nav-links,.nav-cta{display:none}
+.mobile-toggle{display:flex}
+.hero{padding-top:120px}
+.hero-content{text-align:center}
+.hero-buttons{justify-content:center}
+.hero-stats{justify-content:center}
+.hero-stats{flex-wrap:wrap;gap:32px}
+section{padding:80px 0}
+.services-grid,.platform-grid,.portfolio-grid,.blog-grid{grid-template-columns:1fr}
+.pricing-grid{grid-template-columns:1fr}
+.pricing-card.featured{transform:none}
+.pricing-card.featured:hover{transform:translateY(-8px)}
+.contact-grid{grid-template-columns:1fr}
+.footer-grid{grid-template-columns:1fr;text-align:center}
+.footer-brand{max-width:none}
+.footer-bottom{flex-direction:column;gap:16px}
+.cursor{display:none}
+}
+@media(max-width:480px){
+.hero h1{letter-spacing:-1px}
+.hero-stats{flex-direction:column;align-items:center}
+.service-card{padding:24px}
+.pricing-card{padding:28px}
+}
+
+/* Chat Widget */
+.chat-widget{position:fixed;bottom:100px;right:30px;z-index:998}
+.chat-toggle{width:60px;height:60px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--glow-purple);transition:all .3s}
+.chat-toggle:hover{transform:scale(1.1)}
+.chat-toggle svg{width:28px;height:28px;color:var(--dark)}
+.chat-window{position:absolute;bottom:70px;right:0;width:360px;height:480px;background:var(--dark2);border:1px solid var(--glass-border);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .3s}
+.chat-window.open{opacity:1;visibility:visible;transform:translateY(0)}
+.chat-header{background:linear-gradient(135deg,rgba(0,229,255,0.1),rgba(139,92,246,0.1));padding:20px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:12px}
+.chat-avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.chat-header h4{font-size:15px;font-weight:600}
+.chat-header p{font-size:12px;color:var(--text-dim)}
+.chat-messages{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.chat-msg{max-width:85%;padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.5}
+.chat-msg.bot{background:var(--glass);border:1px solid var(--glass-border);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.user{background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--dark);align-self:flex-end;border-bottom-right-radius:4px}
+.chat-input{display:flex;gap:8px;padding:16px;border-top:1px solid var(--glass-border)}
+.chat-input input{flex:1;background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;outline:none}
+.chat-input input:focus{border-color:var(--cyan)}
+.chat-input button{width:44px;height:44px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 </style>
 </head>
-<body class="bg-ink antialiased">
+<body class="loading">
 
-<!-- Preloader -->
-<div id="preloader">
-  <div class="font-display text-3xl font-bold tracking-widest">SHADOW<span class="text-gradient">.</span></div>
-  <p class="text-xs text-gray-500 tracking-widest mt-2 uppercase">Initializing AI Studio Ecosystem</p>
-  <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+<!-- Loader -->
+<div class="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Initializing Shadow Tech</div>
 </div>
 
-<!-- Custom Cursor -->
-<div id="cursor-dot"></div>
-<div id="cursor-ring"></div>
-
-<!-- Scroll Progress -->
-<div id="scroll-progress"></div>
-
-<!-- 3D Particle Background -->
+<!-- Background Canvas -->
 <canvas id="bg-canvas"></canvas>
 
-<!-- ============ NAVBAR ============ -->
-<header id="navbar" class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
-  <nav class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between py-5">
-    <a href="#home" class="font-display text-2xl font-bold tracking-tight flex items-center gap-2">
-      <span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue to-violet animate-pulse"></span>
-      SHADOW<span class="text-gradient">.</span>
+<!-- Custom Cursor -->
+<div class="cursor"></div>
+<div class="cursor-dot"></div>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" style="width:0%"></div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">S</div>
+      <span>Shadow Tech</span>
     </a>
-    <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
-      <li><a href="#home" class="nav-link active">Home</a></li>
-      <li><a href="#about" class="nav-link">About</a></li>
-      <li><a href="#services" class="nav-link">Services</a></li>
-      <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
-      <li><a href="#estimator" class="nav-link text-cyan-400">⚡ Estimator</a></li>
-      <li><a href="#pricing" class="nav-link">Pricing</a></li>
-      <li><a href="#contact" class="nav-link">Contact</a></li>
-    </ul>
-    <div class="hidden md:flex items-center gap-4">
-      <a href="https://cloudshot.ai.studio/" target="_blank" class="btn-primary rounded-full px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue/20">
-        <span>Launch Cloudshot ↗</span>
-      </a>
+    <div class="nav-links">
+      <a href="#services" class="active">Services</a>
+      <a href="#platform">Platform</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#blog">Blog</a>
+      <a href="#contact">Contact</a>
     </div>
-    <button id="menuBtn" class="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 glass rounded-xl" aria-label="Toggle Menu">
-      <span class="block w-6 h-0.5 bg-white"></span>
-      <span class="block w-6 h-0.5 bg-white"></span>
-    </button>
-  </nav>
-  <!-- Mobile Menu -->
-  <div id="mobileMenu" class="md:hidden hidden flex-col gap-2 px-6 pb-6 glass border-b border-white/10">
-    <a href="#home" class="py-3 border-b border-white/5 font-medium">Home</a>
-    <a href="#about" class="py-3 border-b border-white/5 font-medium">About Studio</a>
-    <a href="#services" class="py-3 border-b border-white/5 font-medium">Services & AI</a>
-    <a href="#portfolio" class="py-3 border-b border-white/5 font-medium">Selected Work</a>
-    <a href="#estimator" class="py-3 border-b border-white/5 font-medium text-cyan-400">⚡ Instant Project Estimator</a>
-    <a href="#pricing" class="py-3 border-b border-white/5 font-medium">Pricing Plans</a>
-    <a href="#contact" class="py-3 font-medium">Start Your Project</a>
-    <a href="https://cloudshot.ai.studio/" target="_blank" class="mt-2 text-center btn-primary rounded-full py-3 text-sm font-semibold">Launch Cloudshot Studio ↗</a>
-  </div>
-</header>
-
-<main class="relative z-10">
-
-<!-- ============ HERO ============ -->
-<section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-  <div class="aurora">
-    <div class="blob" style="width:550px;height:550px;background:var(--blue); top:-10%; left:-10%;" data-speed="1.5"></div>
-    <div class="blob" style="width:500px;height:500px;background:var(--violet); bottom:-15%; right:-10%;" data-speed="2"></div>
-    <div class="blob" style="width:350px;height:350px;background:#06B6D4; top:40%; left:50%;" data-speed="1"></div>
-  </div>
-
-  <div class="relative z-10 max-w-5xl mx-auto px-6 text-center pt-16">
-    <div class="inline-flex items-center gap-2.5 glass rounded-full px-5 py-2 mb-8 clip-eyebrow border border-blue/30 shadow-lg shadow-blue/10 animate-bounce">
-      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span> Powered by Cloudshot AI Studio
-    </div>
-    <h1 class="font-display font-bold text-4xl sm:text-6xl lg:text-7xl mb-6 leading-[1.08] tracking-tight">
-      <span class="block">Architect the Future of</span>
-      <span class="block text-gradient">Digital & AI Experiences</span>
-    </h1>
-    <p class="max-w-2xl mx-auto text-gray-300 text-lg sm:text-xl mb-10 font-light leading-relaxed">
-      We design and engineer world-class interfaces, generative AI integrations, and cinematic web products built for industry leaders and high-velocity startups.
-    </p>
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
-      <a href="https://cloudshot.ai.studio/" target="_blank" class="w-full sm:w-auto btn-primary rounded-full px-9 py-4 text-base font-semibold shadow-xl shadow-blue/25 hover:scale-105 transition-transform">
-        <span>Start Your Project ↗</span>
-      </a>
-      <a href="#estimator" class="w-full sm:w-auto btn-outline glass rounded-full px-8 py-4 text-base font-medium hover:bg-white/10">
-        <span>⚡ Calculate Estimate</span>
-      </a>
-    </div>
-
-    <!-- Hero Stats Pill -->
-    <div class="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto p-4 glass rounded-3xl border border-white/10">
-      <div class="p-3"><p class="text-3xl font-display font-bold text-gradient">140+</p><p class="text-xs text-gray-400 mt-1">Products Shipped</p></div>
-      <div class="p-3 border-l border-white/10"><p class="text-3xl font-display font-bold text-gradient">99.4%</p><p class="text-xs text-gray-400 mt-1">Client Satisfaction</p></div>
-      <div class="p-3 border-l border-white/10"><p class="text-3xl font-display font-bold text-gradient">38</p><p class="text-xs text-gray-400 mt-1">Design Awards</p></div>
-      <div class="p-3 border-l border-white/10"><p class="text-3xl font-display font-bold text-gradient">10x</p><p class="text-xs text-gray-400 mt-1">AI Velocity Boost</p></div>
+    <a href="https://cloudshot.ai.studio/" target="_blank" rel="noopener noreferrer" class="nav-cta">Get Started</a>
+    <div class="mobile-toggle">
+      <span></span><span></span><span></span>
     </div>
   </div>
+</nav>
 
-  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-500">
-    <span class="text-[10px] tracking-[.3em] uppercase">Scroll</span>
-    <div class="w-px h-10 bg-gradient-to-b from-white/50 to-transparent animate-pulse"></div>
+<!-- Mobile Nav -->
+<div class="mobile-nav">
+  <a href="#services">Services</a>
+  <a href="#platform">Platform</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#portfolio">Portfolio</a>
+  <a href="#blog">Blog</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<!-- Hero Section -->
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge fade-in">Powered by Advanced AI</div>
+      <h1 class="fade-in stagger-1">Build the Future with <span class="gradient">Shadow Tech AI</span></h1>
+      <p class="hero-sub fade-in stagger-2">Transform businesses with intelligent automation, powerful AI agents, machine learning, and enterprise-grade artificial intelligence solutions.</p>
+      <div class="hero-buttons fade-in stagger-3">
+        <a href="https://cloudshot.ai.studio/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          Start Building
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#platform" class="btn btn-secondary">
+          Explore AI Platform
+        </a>
+      </div>
+      <div class="hero-stats fade-in stagger-4">
+        <div class="stat">
+          <div class="stat-num" data-count="500">0</div>
+          <div class="stat-label">Enterprise Clients</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-count="99">0</div>
+          <div class="stat-label">Accuracy Rate %</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-count="2">0</div>
+          <div class="stat-label">Billion+ API Calls</div>
+        </div>
+      </div>
+    </div>
   </div>
+  <div class="hero-visual" id="hero-visual"></div>
 </section>
 
-<!-- ============ TRUSTED BY ============ -->
-<section class="py-12 border-y border-white/5 overflow-hidden bg-panel/30">
-  <p class="text-center clip-eyebrow mb-6">Trusted by ambitious engineering & design leaders</p>
-  <div class="relative w-full overflow-hidden">
-    <div class="marquee-track gap-16 text-xl sm:text-2xl font-display font-semibold text-gray-500">
-      <span class="hover:text-white transition-colors">NORTHWIND</span>
-      <span class="hover:text-white transition-colors">VertexLabs</span>
-      <span class="hover:text-white transition-colors">CLOUDSHOT</span>
-      <span class="hover:text-white transition-colors">Lumen Co.</span>
-      <span class="hover:text-white transition-colors">ORBITAL</span>
-      <span class="hover:text-white transition-colors">Halcyon AI</span>
-      <span class="hover:text-white transition-colors">Meridian</span>
-      <span class="hover:text-white transition-colors">NORTHWIND</span>
-      <span class="hover:text-white transition-colors">VertexLabs</span>
-      <span class="hover:text-white transition-colors">CLOUDSHOT</span>
-      <span class="hover:text-white transition-colors">Lumen Co.</span>
+<!-- Services Section -->
+<section id="services">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge">Our Services</div>
+      <h2 class="section-title">Enterprise-Grade AI Solutions</h2>
+      <p class="section-sub">Cutting-edge artificial intelligence services designed to accelerate your digital transformation and unlock unprecedented value.</p>
     </div>
-  </div>
-</section>
-
-<!-- ============ ABOUT US ============ -->
-<section id="about" class="section-pad relative">
-  <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-    <div>
-      <div class="inline-block px-3 py-1 rounded-full glass text-xs text-blue mb-4">01 // STUDIO IDENTITY</div>
-      <h2 class="font-display text-4xl lg:text-5xl font-bold mb-6 leading-tight">Where elite craft meets autonomous AI velocity.</h2>
-      <p class="text-gray-300 leading-relaxed mb-6 text-lg">
-        Shadow AI is a specialized collective of designers, AI architects, and full-stack engineers. Partnered directly with <span class="text-cyan-400 font-semibold">Cloudshot AI Studio</span>, we ship interfaces that win global design awards and scale to millions of users without technical debt.
-      </p>
-      <div class="space-y-4 text-gray-400 mb-8 text-sm">
-        <div class="flex items-center gap-3"><span class="w-2 h-2 rounded-full bg-blue"></span> <strong>Zero Junior Hand-offs:</strong> Direct collaboration with senior product leads.</div>
-        <div class="flex items-center gap-3"><span class="w-2 h-2 rounded-full bg-violet"></span> <strong>AI-Native Engineering:</strong> Built-in generative workflows and LLM agent integrations.</div>
-        <div class="flex items-center gap-3"><span class="w-2 h-2 rounded-full bg-cyan-400"></span> <strong>Fixed-Time Delivery:</strong> Guaranteed milestone predictability with zero scope creep.</div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-icon">🤖</div>
+        <h3>AI Automation</h3>
+        <p>Streamline complex workflows with intelligent automation that learns and adapts to your business processes.</p>
+        <a href="#" class="service-link">Learn More →</a>
       </div>
-      <a href="https://cloudshot.ai.studio/" target="_blank" class="btn-outline glass rounded-full px-8 py-3.5 text-sm font-semibold inline-flex items-center gap-2">
-        Explore Cloudshot Ecosystem ↗
-      </a>
-    </div>
-    <div class="tilt-card glass rounded-3xl p-3 border border-white/10 shadow-2xl">
-      <div class="rounded-2xl h-[440px] bg-gradient-to-br from-blue/20 via-panel to-violet/20 flex flex-col justify-between p-8 relative overflow-hidden">
-        <div class="flex justify-between items-center text-xs text-gray-400 font-mono">
-          <span>STATUS: ONLINE</span>
-          <span>LATENCY: 12ms</span>
-        </div>
-        <div class="my-auto text-center">
-          <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue to-violet flex items-center justify-center text-3xl font-display shadow-lg shadow-blue/30">
-            S/
-          </div>
-          <h3 class="font-display text-2xl font-bold mb-2">Cloudshot Studio Engine</h3>
-          <p class="text-sm text-gray-400 max-w-xs mx-auto">Accelerating modern product teams with intelligent full-stack creation.</p>
-        </div>
-        <div class="glass p-4 rounded-xl flex items-center justify-between text-xs text-gray-300">
-          <span>Ready to build your next flagship?</span>
-          <a href="https://cloudshot.ai.studio/" target="_blank" class="text-cyan-400 font-semibold hover:underline">Launch Now →</a>
-        </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🧠</div>
+        <h3>AI Agents</h3>
+        <p>Deploy autonomous AI agents that reason, plan, and execute tasks with human-like intelligence.</p>
+        <a href="#" class="service-link">Learn More →</a>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ SERVICES ============ -->
-<section id="services" class="section-pad relative bg-panel/50 border-t border-white/5">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <div class="inline-block px-3 py-1 rounded-full glass text-xs text-violet mb-4">02 // OUR CAPABILITIES</div>
-      <h2 class="font-display text-4xl lg:text-5xl font-bold mb-4">Full-Spectrum Digital Mastery</h2>
-      <p class="text-gray-400 text-base">We combine deep design sensitivity with cutting-edge artificial intelligence to engineer products that outpace the competition.</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
-      <div class="md:col-span-8 glass glass-card rounded-3xl p-8 transition-all duration-300 flex flex-col justify-between bg-gradient-to-br from-panel to-blue/20">
-        <div>
-          <div class="w-14 h-14 rounded-2xl bg-blue/10 border border-blue/20 flex items-center justify-center mb-6 text-2xl text-blue">✺</div>
-          <h3 class="font-display text-xl font-bold mb-3">UI/UX & Product Design</h3>
-          <p class="text-gray-400 text-sm leading-relaxed mb-6">Human-centered design systems, design tokens, and interactive Figma prototypes engineered for clarity, delight, and conversion.</p>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="text-xs font-semibold text-blue flex items-center gap-1 group">
-          <span>Start UX Engagement</span><span class="group-hover:translate-x-1 transition-transform">→</span>
-        </a>
+      <div class="service-card reveal">
+        <div class="service-icon">💬</div>
+        <h3>Custom AI Chatbots</h3>
+        <p>Build intelligent conversation experiences tailored to your brand with advanced NLP and context awareness.</p>
+        <a href="#" class="service-link">Learn More →</a>
       </div>
-
-      <div class="md:col-span-4 glass glass-card rounded-3xl p-8 transition-all duration-300 flex flex-col justify-between border-blue/40 bg-gradient-to-b from-blue/10 to-transparent">
-        <div>
-          <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6 text-2xl text-cyan-400">⚡</div>
-          <h3 class="font-display text-xl font-bold mb-3 flex items-center gap-2">AI & LLM Solutions <span class="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full">CORE</span></h3>
-          <p class="text-gray-400 text-sm leading-relaxed mb-6">Custom autonomous agents, Gemini AI workflows, vector embeddings, and generative UI experiences built natively into your stack.</p>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="text-xs font-semibold text-cyan-400 flex items-center gap-1 group">
-          <span>Deploy AI Features</span><span class="group-hover:translate-x-1 transition-transform">→</span>
-        </a>
+      <div class="service-card reveal">
+        <div class="service-icon">📊</div>
+        <h3>Machine Learning</h3>
+        <p>Custom ML models trained on your data to uncover patterns, predict outcomes, and drive decisions.</p>
+        <a href="#" class="service-link">Learn More →</a>
       </div>
-
-      <div class="md:col-span-4 glass glass-card rounded-3xl p-8 transition-all duration-300 flex flex-col justify-between">
-        <div>
-          <div class="w-14 h-14 rounded-2xl bg-violet/10 border border-violet/20 flex items-center justify-center mb-6 text-2xl text-violet">⌁</div>
-          <h3 class="font-display text-xl font-bold mb-3">Full-Stack Web Dev</h3>
-          <p class="text-gray-400 text-sm leading-relaxed mb-6">High-performance React, TypeScript, Next.js, and Node.js architectures with sub-second page loads and robust cloud security.</p>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="text-xs font-semibold text-violet flex items-center gap-1 group">
-          <span>Build Web Application</span><span class="group-hover:translate-x-1 transition-transform">→</span>
-        </a>
+      <div class="service-card reveal">
+        <div class="service-icon">☁️</div>
+        <h3>AI SaaS Development</h3>
+        <p>Scale your AI-powered software products with cloud-native architecture and enterprise security.</p>
+        <a href="#" class="service-link">Learn More →</a>
       </div>
-
-      <div class="md:col-span-4 glass glass-card rounded-3xl p-8 transition-all duration-300 flex flex-col justify-between">
-        <div>
-          <div class="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 text-2xl text-purple-400">◈</div>
-          <h3 class="font-display text-xl font-bold mb-3">Brand Identity Systems</h3>
-          <p class="text-gray-400 text-sm leading-relaxed mb-6">Unmistakable visual positioning, custom typography, motion guidelines, and brand bibles that command market authority.</p>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="text-xs font-semibold text-gray-300 flex items-center gap-1 group">
-          <span>Elevate Your Brand</span><span class="group-hover:translate-x-1 transition-transform">→</span>
-        </a>
+      <div class="service-card reveal">
+        <div class="service-icon">✍️</div>
+        <h3>AI Content Generation</h3>
+        <p>Generate high-quality text, images, and multimedia content at scale with state-of-the-art models.</p>
+        <a href="#" class="service-link">Learn More →</a>
       </div>
-
-      <div class="md:col-span-4 glass glass-card rounded-3xl p-8 transition-all duration-300 flex flex-col justify-between">
-        <div>
-          <div class="w-14 h-14 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center mb-6 text-2xl text-pink-400">▶</div>
-          <h3 class="font-display text-xl font-bold mb-3">Cinematic Motion & 3D</h3>
-          <p class="text-gray-400 text-sm leading-relaxed mb-6">GSAP micro-interactions, Three.js WebGL shaders, and fluid layout transitions that transform static screens into living experiences.</p>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="text-xs font-semibold text-gray-300 flex items-center gap-1 group">
-          <span>Add Interactive Motion</span><span class="group-hover:translate-x-1 transition-transform">→</span>
-        </a>
+      <div class="service-card reveal">
+        <div class="service-icon">🔍</div>
+        <h3>AI Data Analytics</h3>
+        <p>Transform raw data into actionable insights with predictive analytics and real-time dashboards.</p>
+        <a href="#" class="service-link">Learn More →</a>
       </div>
-
-      <div class="md:col-span-12 glass glass-card rounded-3xl p-8 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gradient-to-r from-panel via-blue/10 to-panel">
-        <div>
-          <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 text-2xl text-emerald-400">↗</div>
-          <h3 class="font-display text-xl font-bold mb-3">SEO & Performance Scaling</h3>
-          <p class="text-gray-400 text-sm leading-relaxed mb-6 max-w-2xl">Core Web Vitals optimization, programmatic SEO structures, and edge-cached routing that drive organic compounding traffic.</p>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="text-xs font-semibold text-gray-300 flex items-center gap-1 group whitespace-nowrap bg-white/5 px-6 py-3 rounded-full border border-white/10 hover:border-blue transition-colors">
-          <span>Optimize Performance</span><span class="group-hover:translate-x-1 transition-transform">→</span>
-        </a>
+      <div class="service-card reveal">
+        <div class="service-icon">👁️</div>
+        <h3>Computer Vision</h3>
+        <p>Extract meaningful information from images and videos for quality control, security, and analytics.</p>
+        <a href="#" class="service-link">Learn More →</a>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🎙️</div>
+        <h3>Voice AI</h3>
+        <p>Create natural voice interfaces with speech recognition, synthesis, and conversational AI.</p>
+        <a href="#" class="service-link">Learn More →</a>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🏢</div>
+        <h3>Enterprise Integration</h3>
+        <p>Seamlessly integrate AI capabilities into your existing enterprise systems and workflows.</p>
+        <a href="#" class="service-link">Learn More →</a>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🔮</div>
+        <h3>Predictive Intelligence</h3>
+        <p>Anticipate trends, behaviors, and outcomes with advanced forecasting models.</p>
+        <a href="#" class="service-link">Learn More →</a>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🔒</div>
+        <h3>Cybersecurity AI</h3>
+        <p>Protect your infrastructure with AI-powered threat detection and autonomous security response.</p>
+        <a href="#" class="service-link">Learn More →</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ PORTFOLIO / SELECTED WORK ============ -->
-<section id="portfolio" class="section-pad relative">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
-      <div>
-        <div class="inline-block px-3 py-1 rounded-full glass text-xs text-blue mb-4">03 // SELECTED WORK</div>
-        <h2 class="font-display text-4xl lg:text-5xl font-bold">Featured Projects</h2>
+<!-- Platform Section -->
+<section id="platform">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge">AI Marketplace</div>
+      <h2 class="section-title">Explore the AI Platform</h2>
+      <p class="section-sub">Access pre-built AI models, agents, and APIs to accelerate your development.</p>
+    </div>
+    <div class="platform-search reveal">
+      <div class="search-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search AI models, agents, APIs..." id="platform-search">
       </div>
-      <!-- Interactive Filter Buttons -->
-      <div class="flex flex-wrap gap-2" id="projectFilters">
-        <button class="filter-btn active px-5 py-2 rounded-full glass text-xs font-semibold transition-all" data-filter="all">All Work</button>
-        <button class="filter-btn px-5 py-2 rounded-full glass text-xs font-semibold transition-all" data-filter="ai">AI & ML</button>
-        <button class="filter-btn px-5 py-2 rounded-full glass text-xs font-semibold transition-all" data-filter="fintech">Fintech</button>
-        <button class="filter-btn px-5 py-2 rounded-full glass text-xs font-semibold transition-all" data-filter="saas">SaaS & Cloud</button>
+      <div class="filter-tabs">
+        <div class="filter-tab active" data-filter="all">All</div>
+        <div class="filter-tab" data-filter="model">AI Models</div>
+        <div class="filter-tab" data-filter="agent">AI Agents</div>
+        <div class="filter-tab" data-filter="api">APIs</div>
+        <div class="filter-tab" data-filter="template">Templates</div>
       </div>
     </div>
+    <div class="platform-grid" id="platform-grid">
+      <div class="platform-card reveal" data-category="model">
+        <div class="platform-card-header">
+          <div class="platform-icon">🧠</div>
+          <span class="platform-tag">Model</span>
+        </div>
+        <h4>ShadowLLM-7B</h4>
+        <p>Advanced language model optimized for reasoning and code generation.</p>
+        <div class="platform-card-footer">
+          <span class="platform-meta">2.1B params • 4K context</span>
+          <a href="#" class="platform-btn">Explore →</a>
+        </div>
+      </div>
+      <div class="platform-card reveal" data-category="agent">
+        <div class="platform-card-header">
+          <div class="platform-icon">🤖</div>
+          <span class="platform-tag">Agent</span>
+        </div>
+        <h4>Data Analyst Agent</h4>
+        <p>Autonomous agent that explores datasets and generates insights.</p>
+        <div class="platform-card-footer">
+          <span class="platform-meta">No-code • Real-time</span>
+          <a href="#" class="platform-btn">Explore →</a>
+        </div>
+      </div>
+      <div class="platform-card reveal" data-category="api">
+        <div class="platform-card-header">
+          <div class="platform-icon">⚡</div>
+          <span class="platform-tag">API</span>
+        </div>
+        <h4>NLP Processing API</h4>
+        <p>Sentiment analysis, entity extraction, and text classification endpoints.</p>
+        <div class="platform-card-footer">
+          <span class="platform-meta">99.9% uptime • REST</span>
+          <a href="#" class="platform-btn">Explore →</a>
+        </div>
+      </div>
+      <div class="platform-card reveal" data-category="template">
+        <div class="platform-card-header">
+          <div class="platform-icon">📋</div>
+          <span class="platform-tag">Template</span>
+        </div>
+        <h4>Customer Support Bot</h4>
+        <p>Complete chatbot template with FAQ, ticket routing, and escalation.</p>
+        <div class="platform-card-footer">
+          <span class="platform-meta">Widget + API • Multi-lang</span>
+          <a href="#" class="platform-btn">Explore →</a>
+        </div>
+      </div>
+      <div class="platform-card reveal" data-category="model">
+        <div class="platform-card-header">
+          <div class="platform-icon">🎨</div>
+          <span class="platform-tag">Model</span>
+        </div>
+        <h4>ShadowVision-512</h4>
+        <p>High-resolution image generation and editing model.</p>
+        <div class="platform-card-footer">
+          <span class="platform-meta">512×512 • Real-time</span>
+          <a href="#" class="platform-btn">Explore →</a>
+        </div>
+      </div>
+      <div class="platform-card reveal" data-category="agent">
+        <div class="platform-card-header">
+          <div class="platform-icon">📈</div>
+          <span class="platform-tag">Agent</span>
+        </div>
+        <h4>Trading Agent</h4>
+        <p>AI agent for automated trading with risk management.</p>
+        <div class="platform-card-footer">
+          <span class="platform-meta">Live data • Backtested</span>
+          <a href="#" class="platform-btn">Explore →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6" id="projectsGrid">
-      <!-- Project 1 -->
-      <div class="md:col-span-7 project-item group rounded-3xl overflow-hidden border border-white/10 glass bg-gradient-to-br from-blue/20 via-panel to-ink p-1 transition-all" data-category="fintech ai">
-        <div class="h-[380px] rounded-2xl relative overflow-hidden bg-panel/80 p-8 flex flex-col justify-between">
-          <div class="flex justify-between items-start">
-            <span class="px-3 py-1 rounded-full bg-blue/20 text-blue text-xs font-semibold">FINTECH · AI INTEGRATION</span>
-            <span class="text-xs font-mono text-gray-400">2026 // CASE STUDY</span>
-          </div>
-          <div class="my-auto">
-            <h3 class="font-display text-3xl font-bold mb-2">Northwind AI Banking</h3>
-            <p class="text-gray-400 text-sm max-w-md">Autonomous wealth advisory portal with Gemini 2.5 streaming insights and real-time portfolio risk simulation.</p>
-          </div>
-          <div class="flex items-center justify-between pt-4 border-t border-white/10">
-            <div class="flex gap-2 text-xs text-gray-400">
-              <span class="px-2 py-1 rounded bg-white/5">React 19</span>
-              <span class="px-2 py-1 rounded bg-white/5">Gemini API</span>
-              <span class="px-2 py-1 rounded bg-white/5">+42% Conversion</span>
+<!-- Pricing Section -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge">Pricing</div>
+      <h2 class="section-title">Choose Your Plan</h2>
+      <p class="section-sub">Flexible pricing for startups to enterprise. Scale as you grow.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <h3>Starter</h3>
+        <div class="price">$29<span>/month</span></div>
+        <p class="desc">Perfect for developers and small projects getting started with AI.</p>
+        <ul class="pricing-features">
+          <li>5,000 API calls/month</li>
+          <li>3 AI Models access</li>
+          <li>Basic Analytics</li>
+          <li>Community Support</li>
+          <li>Standard Rate Limits</li>
+        </ul>
+        <a href="https://cloudshot.ai.studio/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Get Started</a>
+      </div>
+      <div class="pricing-card featured reveal">
+        <div class="pricing-badge">Most Popular</div>
+        <h3>Pro</h3>
+        <div class="price">$99<span>/month</span></div>
+        <p class="desc">For growing businesses requiring advanced AI capabilities.</p>
+        <ul class="pricing-features">
+          <li>100,000 API calls/month</li>
+          <li>All AI Models access</li>
+          <li>Advanced Analytics</li>
+          <li>Priority Support</li>
+          <li>Custom Deployments</li>
+          <li>Team Collaboration</li>
+        </ul>
+        <a href="https://cloudshot.ai.studio/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Get Started</a>
+      </div>
+      <div class="pricing-card reveal">
+        <h3>Enterprise</h3>
+        <div class="price">Custom</div>
+        <p class="desc">Tailored solutions for large organizations with specific needs.</p>
+        <ul class="pricing-features">
+          <li>Unlimited API calls</li>
+          <li>Custom Model Training</li>
+          <li>Dedicated Infrastructure</li>
+          <li>24/7 Dedicated Support</li>
+          <li>SLA Guarantee</li>
+          <li>On-premise Deployment</li>
+        </ul>
+        <a href="#contact" class="btn btn-secondary">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Portfolio Section -->
+<section id="portfolio">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge">Case Studies</div>
+      <h2 class="section-title">AI in Action</h2>
+      <p class="section-sub">Real results from real AI implementations across industries.</p>
+    </div>
+    <div class="portfolio-grid">
+      <div class="portfolio-card reveal">
+        <div class="portfolio-visual">
+          <div class="mini-chart"></div>
+        </div>
+        <div class="portfolio-content">
+          <h4>Enterprise Analytics Dashboard</h4>
+          <p>AI-powered business intelligence platform with real-time data visualization.</p>
+          <div class="portfolio-stats">
+            <div class="portfolio-stat">
+              <div class="num" data-count="340">0</div>
+              <div class="label">Productivity %</div>
             </div>
-            <button onclick="openCaseStudy('northwind')" class="btn-primary rounded-full px-5 py-2 text-xs font-semibold">View Case Study →</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Project 2 -->
-      <div class="md:col-span-5 project-item group rounded-3xl overflow-hidden border border-white/10 glass bg-gradient-to-br from-violet/20 via-panel to-ink p-1 transition-all" data-category="saas ai">
-        <div class="h-[380px] rounded-2xl relative overflow-hidden bg-panel/80 p-8 flex flex-col justify-between">
-          <div class="flex justify-between items-start">
-            <span class="px-3 py-1 rounded-full bg-violet/20 text-violet text-xs font-semibold">SAAS · GENAI PLATFORM</span>
-            <span class="text-xs font-mono text-gray-400">2026 // CASE STUDY</span>
-          </div>
-          <div class="my-auto">
-            <h3 class="font-display text-3xl font-bold mb-2">Orbital AI Analytics</h3>
-            <p class="text-gray-400 text-sm max-w-md">Next-gen predictive data canvas turning millions of unstructured enterprise logs into actionable visual intelligence.</p>
-          </div>
-          <div class="flex items-center justify-between pt-4 border-t border-white/10">
-            <div class="flex gap-2 text-xs text-gray-400">
-              <span class="px-2 py-1 rounded bg-white/5">TypeScript</span>
-              <span class="px-2 py-1 rounded bg-white/5">Three.js</span>
-              <span class="px-2 py-1 rounded bg-white/5">3.2x Velocity</span>
+            <div class="portfolio-stat">
+              <div class="num" data-count="85">0</div>
+              <div class="label">Automation %</div>
             </div>
-            <button onclick="openCaseStudy('orbital')" class="btn-primary rounded-full px-5 py-2 text-xs font-semibold">View Case Study →</button>
           </div>
         </div>
       </div>
-
-      <!-- Project 3 -->
-      <div class="md:col-span-5 project-item group rounded-3xl overflow-hidden border border-white/10 glass bg-gradient-to-br from-cyan-500/20 via-panel to-ink p-1 transition-all" data-category="ai">
-        <div class="h-[380px] rounded-2xl relative overflow-hidden bg-panel/80 p-8 flex flex-col justify-between">
-          <div class="flex justify-between items-start">
-            <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-semibold">AI STUDIO · FLAGSHIP</span>
-            <span class="text-xs font-mono text-gray-400">2026 // LIVE ECOSYSTEM</span>
-          </div>
-          <div class="my-auto">
-            <h3 class="font-display text-3xl font-bold mb-2">Cloudshot AI Studio</h3>
-            <p class="text-gray-400 text-sm max-w-md">Our flagship collaborative creation workspace enabling natural language generation of production-ready full-stack applications.</p>
-          </div>
-          <div class="flex items-center justify-between pt-4 border-t border-white/10">
-            <div class="flex gap-2 text-xs text-gray-400">
-              <span class="px-2 py-1 rounded bg-white/5">Antigravity</span>
-              <span class="px-2 py-1 rounded bg-white/5">Vite + Tailwind</span>
+      <div class="portfolio-card reveal">
+        <div class="portfolio-visual">
+          <div class="mini-chart"></div>
+        </div>
+        <div class="portfolio-content">
+          <h4>Healthcare Diagnosis Assistant</h4>
+          <p>ML-powered system for early disease detection and patient risk assessment.</p>
+          <div class="portfolio-stats">
+            <div class="portfolio-stat">
+              <div class="num" data-count="96">0</div>
+              <div class="label">Accuracy %</div>
             </div>
-            <a href="https://cloudshot.ai.studio/" target="_blank" class="btn-primary rounded-full px-5 py-2 text-xs font-semibold">Launch App ↗</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Project 4 -->
-      <div class="md:col-span-7 project-item group rounded-3xl overflow-hidden border border-white/10 glass bg-gradient-to-br from-emerald-500/20 via-panel to-ink p-1 transition-all" data-category="saas fintech">
-        <div class="h-[380px] rounded-2xl relative overflow-hidden bg-panel/80 p-8 flex flex-col justify-between">
-          <div class="flex justify-between items-start">
-            <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold">HEALTHCARE · UI/UX</span>
-            <span class="text-xs font-mono text-gray-400">2026 // CASE STUDY</span>
-          </div>
-          <div class="my-auto">
-            <h3 class="font-display text-3xl font-bold mb-2">Halcyon Genomics</h3>
-            <p class="text-gray-400 text-sm max-w-md">Precision medicine patient diagnostic dashboard with biometric data visualization and automated clinical reporting.</p>
-          </div>
-          <div class="flex items-center justify-between pt-4 border-t border-white/10">
-            <div class="flex gap-2 text-xs text-gray-400">
-              <span class="px-2 py-1 rounded bg-white/5">WebSockets</span>
-              <span class="px-2 py-1 rounded bg-white/5">D3 Charts</span>
+            <div class="portfolio-stat">
+              <div class="num" data-count="45">0</div>
+              <div class="label">Faster Diagnosis</div>
             </div>
-            <button onclick="openCaseStudy('halcyon')" class="btn-primary rounded-full px-5 py-2 text-xs font-semibold">View Case Study →</button>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-card reveal">
+        <div class="portfolio-visual">
+          <div class="mini-chart"></div>
+        </div>
+        <div class="portfolio-content">
+          <h4>Financial Trading Platform</h4>
+          <p>AI-driven trading system with predictive analytics and risk management.</p>
+          <div class="portfolio-stats">
+            <div class="portfolio-stat">
+              <div class="num" data-count="280">0</div>
+              <div class="label">Revenue Growth %</div>
+            </div>
+            <div class="portfolio-stat">
+              <div class="num" data-count="12">0</div>
+              <div class="label">ms Response</div>
+            </div>
           </div>
         </div>
       </div>
@@ -513,685 +668,605 @@
   </div>
 </section>
 
-<!-- ============ INTERACTIVE AI PROJECT ESTIMATOR ============ -->
-<section id="estimator" class="section-pad relative bg-gradient-to-b from-panel via-ink to-panel border-y border-white/10">
-  <div class="max-w-5xl mx-auto px-6">
-    <div class="text-center max-w-3xl mx-auto mb-12">
-      <div class="inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-400 mb-4 font-semibold animate-pulse">
-        ⚡ INSTANT AI ESTIMATOR
-      </div>
-      <h2 class="font-display text-4xl lg:text-5xl font-bold mb-4">Calculate Your Project Estimate</h2>
-      <p class="text-gray-400 text-sm sm:text-base">Select your scope and requirements to get an instant cost and timeline prediction powered by Cloudshot Studio.</p>
+<!-- Blog Section -->
+<section id="blog">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge">Research & Insights</div>
+      <h2 class="section-title">Latest from Shadow Tech</h2>
+      <p class="section-sub">Stay ahead with insights from our AI research team.</p>
     </div>
-
-    <div class="glass rounded-3xl p-6 sm:p-10 border border-white/15 grid lg:grid-cols-12 gap-8 items-center shadow-2xl">
-      <!-- Left Controls -->
-      <div class="lg:col-span-7 space-y-6">
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">1. Select Core Service Type</label>
-          <div class="grid grid-cols-2 gap-3" id="estService">
-            <button type="button" class="est-btn active text-left p-4 rounded-xl border border-blue/50 bg-blue/10 text-sm font-medium transition-all" data-price="4500" data-name="UI/UX & Design System">
-              🎨 UI/UX & Design System<span class="block text-xs text-gray-400 font-normal mt-1">Figma prototypes & branding</span>
-            </button>
-            <button type="button" class="est-btn text-left p-4 rounded-xl border border-white/10 glass text-sm font-medium transition-all hover:border-white/30" data-price="8500" data-name="Full-Stack Web App">
-              💻 Full-Stack Web App<span class="block text-xs text-gray-400 font-normal mt-1">React, Next.js, Node architecture</span>
-            </button>
-            <button type="button" class="est-btn text-left p-4 rounded-xl border border-white/10 glass text-sm font-medium transition-all hover:border-white/30" data-price="12000" data-name="AI / Gemini Integration">
-              ⚡ AI / Gemini Integration<span class="block text-xs text-gray-400 font-normal mt-1">Custom LLM agents & automation</span>
-            </button>
-            <button type="button" class="est-btn text-left p-4 rounded-xl border border-white/10 glass text-sm font-medium transition-all hover:border-white/30" data-price="16500" data-name="Enterprise AI Platform">
-              🚀 Enterprise AI Platform<span class="block text-xs text-gray-400 font-normal mt-1">Full cloud ecosystem & scale</span>
-            </button>
+    <div class="blog-grid">
+      <div class="blog-card reveal">
+        <div class="blog-image"></div>
+        <div class="blog-content">
+          <div class="blog-meta">
+            <span>🤖 AI</span>
+            <span>📅 Dec 2024</span>
+            <span>⏱️ 8 min read</span>
           </div>
+          <h4>The Future of Autonomous AI Agents in Enterprise</h4>
+          <p>Exploring how multi-agent systems are reshaping business automation.</p>
         </div>
-
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">2. Delivery Timeline</label>
-          <div class="grid grid-cols-2 gap-3" id="estSpeed">
-            <button type="button" class="speed-btn active p-3 rounded-xl border border-blue/50 bg-blue/10 text-sm font-medium text-center" data-mult="1" data-time="6-8 Weeks">
-              Standard Pace (6-8 Weeks)
-            </button>
-            <button type="button" class="speed-btn p-3 rounded-xl border border-white/10 glass text-sm font-medium text-center hover:border-white/30" data-mult="1.25" data-time="3-4 Weeks">
-              🔥 Accelerated Sprint (3-4 Weeks)
-            </button>
+      </div>
+      <div class="blog-card reveal">
+        <div class="blog-image"></div>
+        <div class="blog-content">
+          <div class="blog-meta">
+            <span>🧠 ML</span>
+            <span>📅 Dec 2024</span>
+            <span>⏱️ 12 min read</span>
           </div>
+          <h4>Building Production-Ready LLM Applications</h4>
+          <p>Best practices for deploying large language models at scale.</p>
         </div>
-
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">3. Monthly Active Users / Scale</label>
-          <input type="range" id="estScale" min="10" max="500" step="10" value="50" class="w-full accent-blue bg-white/10 h-2 rounded-lg cursor-pointer">
-          <div class="flex justify-between text-xs text-gray-400 mt-1 font-mono">
-            <span>10k Users</span>
-            <span id="scaleValLabel" class="text-blue font-bold">50k Users (+ $1,000)</span>
-            <span>500k+ Users</span>
+      </div>
+      <div class="blog-card reveal">
+        <div class="blog-image"></div>
+        <div class="blog-content">
+          <div class="blog-meta">
+            <span>🔒 Security</span>
+            <span>📅 Nov 2024</span>
+            <span>⏱️ 6 min read</span>
           </div>
-        </div>
-      </div>
-
-      <!-- Right Result Panel -->
-      <div class="lg:col-span-5 bg-gradient-to-b from-panel to-ink p-8 rounded-2xl border border-white/10 flex flex-col justify-between h-full text-center relative overflow-hidden">
-        <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue/20 rounded-full blur-2xl pointer-events-none"></div>
-        <div>
-          <span class="text-[11px] font-mono tracking-widest text-gray-400 uppercase">ESTIMATED INVESTMENT</span>
-          <div class="font-display text-5xl lg:text-6xl font-bold text-gradient my-4" id="estTotal">$5,500</div>
-          <p class="text-xs text-cyan-400 font-medium mb-6">Estimated Timeline: <span id="estTimeLabel" class="text-white font-bold">6-8 Weeks</span></p>
-          <div class="text-left text-xs text-gray-300 space-y-2 mb-8 glass p-4 rounded-xl">
-            <div class="flex justify-between"><span>Selected Scope:</span><strong id="estScopeLabel">UI/UX & Design System</strong></div>
-            <div class="flex justify-between"><span>Architecture:</span><strong>Cloudshot Studio Certified</strong></div>
-            <div class="flex justify-between"><span>Post-Launch Support:</span><strong>30-Day Guarantee</strong></div>
-          </div>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="w-full btn-primary rounded-xl py-4 text-sm font-semibold shadow-xl shadow-blue/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
-          <span>Lock in Estimate at Cloudshot ↗</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ PRICING ============ -->
-<section id="pricing" class="section-pad relative">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center max-w-2xl mx-auto mb-12">
-      <div class="inline-block px-3 py-1 rounded-full glass text-xs text-blue mb-4">04 // TRANSPARENT PRICING</div>
-      <h2 class="font-display text-4xl lg:text-5xl font-bold mb-4">Engagement Tiers</h2>
-      <p class="text-gray-400 text-sm sm:text-base mb-8">Choose a dedicated tier for continuous design & AI engineering or launch immediately with Cloudshot.</p>
-      
-      <!-- Interactive Billing Toggle -->
-      <div class="inline-flex items-center gap-3 p-1.5 glass rounded-full border border-white/10">
-        <button id="toggleMonthly" class="px-5 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-blue to-violet text-white transition-all">Project Milestone</button>
-        <button id="toggleYearly" class="px-5 py-2 rounded-full text-xs font-semibold text-gray-400 hover:text-white transition-all flex items-center gap-1.5">
-          <span>Monthly Retainer</span>
-          <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full">Save 20%</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-8 items-stretch">
-      <!-- Tier 1 -->
-      <div class="glass rounded-3xl p-8 sm:p-10 flex flex-col justify-between border border-white/10 hover:border-white/30 transition-all">
-        <div>
-          <h3 class="font-display text-2xl font-bold mb-2">Starter Design</h3>
-          <p class="text-gray-400 text-sm mb-6">For early-stage startups and rapid MVP validation.</p>
-          <div class="font-display text-4xl font-bold mb-6 price-val" data-monthly="$4,500" data-yearly="$3,600/mo">$4,500</div>
-          <ul class="space-y-3 text-sm text-gray-300 mb-8">
-            <li class="flex items-center gap-2.5"><span class="text-blue font-bold">✓</span> UI/UX Design (Up to 15 Screens)</li>
-            <li class="flex items-center gap-2.5"><span class="text-blue font-bold">✓</span> Interactive Figma Design System</li>
-            <li class="flex items-center gap-2.5"><span class="text-blue font-bold">✓</span> Responsive Mobile & Desktop Layouts</li>
-            <li class="flex items-center gap-2.5"><span class="text-blue font-bold">✓</span> 2 Weeks Revision Cycles</li>
-          </ul>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="block text-center btn-outline glass rounded-full py-3.5 text-sm font-semibold hover:bg-white/10">
-          Start with Cloudshot ↗
-        </a>
-      </div>
-
-      <!-- Tier 2 Popular -->
-      <div class="glass rounded-3xl p-8 sm:p-10 flex flex-col justify-between border-2 border-blue/60 bg-gradient-to-b from-blue/10 via-panel to-panel relative shadow-2xl shadow-blue/10 scale-105 z-10">
-        <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 text-xs font-bold bg-gradient-to-r from-blue to-violet px-4 py-1 rounded-full text-white shadow-md">
-          🔥 MOST POPULAR
-        </span>
-        <div>
-          <h3 class="font-display text-2xl font-bold mb-2">Full-Stack & AI Growth</h3>
-          <p class="text-gray-400 text-sm mb-6">Complete web architecture with generative AI features.</p>
-          <div class="font-display text-4xl font-bold mb-6 text-gradient price-val" data-monthly="$9,500" data-yearly="$7,600/mo">$9,500</div>
-          <ul class="space-y-3 text-sm text-gray-300 mb-8">
-            <li class="flex items-center gap-2.5"><span class="text-cyan-400 font-bold">✓</span> Everything in Starter Design</li>
-            <li class="flex items-center gap-2.5"><span class="text-cyan-400 font-bold">✓</span> React / Next.js Production Engineering</li>
-            <li class="flex items-center gap-2.5"><span class="text-cyan-400 font-bold">✓</span> Gemini / LLM Custom Agent Integration</li>
-            <li class="flex items-center gap-2.5"><span class="text-cyan-400 font-bold">✓</span> GSAP & Three.js 3D Micro-interactions</li>
-            <li class="flex items-center gap-2.5"><span class="text-cyan-400 font-bold">✓</span> 60-Day Post-Launch SLA Support</li>
-          </ul>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="block text-center btn-primary rounded-full py-4 text-sm font-semibold text-white shadow-lg shadow-blue/30">
-          <span>Deploy Growth Package ↗</span>
-        </a>
-      </div>
-
-      <!-- Tier 3 -->
-      <div class="glass rounded-3xl p-8 sm:p-10 flex flex-col justify-between border border-white/10 hover:border-white/30 transition-all">
-        <div>
-          <h3 class="font-display text-2xl font-bold mb-2">Enterprise Retainer</h3>
-          <p class="text-gray-400 text-sm mb-6">Dedicated autonomous AI & engineering squad.</p>
-          <div class="font-display text-4xl font-bold mb-6 price-val" data-monthly="Custom" data-yearly="Custom">Custom</div>
-          <ul class="space-y-3 text-sm text-gray-300 mb-8">
-            <li class="flex items-center gap-2.5"><span class="text-violet font-bold">✓</span> Dedicated Senior Tech Lead & Designers</li>
-            <li class="flex items-center gap-2.5"><span class="text-violet font-bold">✓</span> Custom AI Architecture & Fine-tuning</li>
-            <li class="flex items-center gap-2.5"><span class="text-violet font-bold">✓</span> Enterprise Security & Cloud Scalability</li>
-            <li class="flex items-center gap-2.5"><span class="text-violet font-bold">✓</span> Priority Slack Channel & Weekly Sprints</li>
-          </ul>
-        </div>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="block text-center btn-outline glass rounded-full py-3.5 text-sm font-semibold hover:bg-white/10">
-          Contact Enterprise Team ↗
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ TESTIMONIALS ============ -->
-<section id="testimonials" class="section-pad relative bg-panel/40 border-t border-white/5">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center max-w-2xl mx-auto mb-16">
-      <div class="inline-block px-3 py-1 rounded-full glass text-xs text-violet mb-4">05 // CLIENT PROOF</div>
-      <h2 class="font-display text-4xl lg:text-5xl font-bold">What Industry Leaders Say</h2>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div class="md:col-span-5 glass rounded-3xl p-8 flex flex-col justify-between h-full border border-white/10">
-        <div>
-          <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
-          <p class="text-gray-300 mb-6 leading-relaxed text-sm">"Shadow AI and Cloudshot Studio rebuilt our entire fintech onboarding flow in just 4 weeks. Our application completion rate surged by 42% within the first month of release."</p>
-        </div>
-        <div class="flex items-center gap-4 pt-4 border-t border-white/10">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue to-cyan-500 flex items-center justify-center font-bold text-sm">EM</div>
-          <div>
-            <p class="font-display text-sm font-bold">Elena Marsh</p>
-            <p class="text-gray-500 text-xs">VP Product, Northwind Capital</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="md:col-span-7 glass rounded-3xl p-8 flex flex-col justify-between h-full border border-blue/40 bg-gradient-to-br from-panel via-blue/10 to-panel">
-        <div>
-          <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
-          <p class="text-gray-300 mb-6 leading-relaxed text-sm">"The most senior, opinionated engineering team we've ever partnered with. The Gemini AI features they integrated natively into our analytics platform blew our board away."</p>
-        </div>
-        <div class="flex items-center gap-4 pt-4 border-t border-white/10">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet to-pink-500 flex items-center justify-center font-bold text-sm">DC</div>
-          <div>
-            <p class="font-display text-sm font-bold">Daniel Cho</p>
-            <p class="text-gray-500 text-xs">Founder & CEO, Orbital AI</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="md:col-span-12 glass rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-white/10">
-        <div class="max-w-2xl">
-          <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
-          <p class="text-gray-300 mb-6 leading-relaxed text-sm">"Unbeatable delivery velocity. We went from rough napkin idea to a fully functioning AI healthcare diagnostic prototype in under a month. Truly extraordinary."</p>
-        </div>
-        <div class="flex items-center gap-4 pt-4 md:pt-0 border-t md:border-t-0 border-white/10 md:border-l md:pl-6">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-bold text-sm">PN</div>
-          <div>
-            <p class="font-display text-sm font-bold">Priya Nair</p>
-            <p class="text-gray-500 text-xs">Chief Medical Officer, Halcyon</p>
-          </div>
+          <h4>AI-Powered Threat Detection Systems</h4>
+          <p>How machine learning is transforming cybersecurity defenses.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ INTERACTIVE FAQ ============ -->
-<section class="section-pad relative">
-  <div class="max-w-3xl mx-auto px-6">
-    <div class="text-center mb-12">
-      <div class="inline-block px-3 py-1 rounded-full glass text-xs text-blue mb-4">06 // QUESTIONS</div>
-      <h2 class="font-display text-4xl font-bold mb-4">Frequently Asked Questions</h2>
-      <div class="mt-6 max-w-md mx-auto relative">
-        <input type="text" id="faqSearch" placeholder="Type to filter questions (e.g. AI, timeline, startup)..." class="w-full bg-white/5 border border-white/15 rounded-full px-5 py-3 text-sm focus:border-blue outline-none text-white placeholder-gray-500">
-      </div>
+<!-- Contact Section -->
+<section id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge">Get in Touch</div>
+      <h2 class="section-title">Start Your AI Journey</h2>
+      <p class="section-sub">Ready to transform your business with AI? Let's talk.</p>
     </div>
-
-    <div class="space-y-3" id="faqList">
-      <div class="faq-item glass rounded-2xl px-6 py-5 cursor-pointer border border-white/5 hover:border-white/20 transition-all" data-tags="timeline duration speed">
-        <div class="flex items-center justify-between">
-          <h4 class="font-display text-base font-semibold">How long does a typical full-stack or AI project take?</h4>
-          <span class="faq-icon text-xl text-blue font-bold">+</span>
+    <div class="contact-grid">
+      <div class="contact-form reveal">
+        <form id="contact-form">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="John Smith" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="john@company.com" required>
+          </div>
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" placeholder="Acme Corp">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea rows="5" placeholder="Tell us about your project..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+            Send Message
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </form>
+      </div>
+      <div class="contact-info reveal">
+        <h3>Let's Build Something Extraordinary</h3>
+        <p>Whether you're a startup looking to disrupt or an enterprise seeking innovation, Shadow Tech has the AI expertise to make it happen.</p>
+        <div class="contact-methods">
+          <div class="contact-method">
+            <div class="contact-method-icon">📧</div>
+            <div>
+              <h5>Email</h5>
+              <p>hello@shadowtech.ai</p>
+            </div>
+          </div>
+          <div class="contact-method">
+            <div class="contact-method-icon">📍</div>
+            <div>
+              <h5>Headquarters</h5>
+              <p>San Francisco, CA</p>
+            </div>
+          </div>
+          <div class="contact-method">
+            <div class="contact-method-icon">📞</div>
+            <div>
+              <h5>Phone</h5>
+              <p>+1 (888) 742-8346</p>
+            </div>
+          </div>
         </div>
-        <div class="faq-answer text-gray-400 text-sm pt-4 pr-8 leading-relaxed">
-          Standard design and frontend builds run 4–6 weeks. Complex full-stack AI platforms with custom LLM integrations run 6–8 weeks. We also offer accelerated 3-week sprint packages for urgent product launches.
-        </div>
-      </div>
-
-      <div class="faq-item glass rounded-2xl px-6 py-5 cursor-pointer border border-white/5 hover:border-white/20 transition-all" data-tags="cloudshot studio ai link">
-        <div class="flex items-center justify-between">
-          <h4 class="font-display text-base font-semibold">What is the connection between Shadow AI and Cloudshot Studio?</h4>
-          <span class="faq-icon text-xl text-blue font-bold">+</span>
-        </div>
-        <div class="faq-answer text-gray-400 text-sm pt-4 pr-8 leading-relaxed">
-          We utilize <a href="https://cloudshot.ai.studio/" target="_blank" class="text-cyan-400 underline">Cloudshot AI Studio</a> as our core generative engineering environment. It allows our architects and clients to rapidly iterate, prototype, and deploy full-stack code with unmatched velocity.
-        </div>
-      </div>
-
-      <div class="faq-item glass rounded-2xl px-6 py-5 cursor-pointer border border-white/5 hover:border-white/20 transition-all" data-tags="startup early stage free">
-        <div class="flex items-center justify-between">
-          <h4 class="font-display text-base font-semibold">Do you work with early-stage startups or bootstrapped founders?</h4>
-          <span class="faq-icon text-xl text-blue font-bold">+</span>
-        </div>
-        <div class="faq-answer text-gray-400 text-sm pt-4 pr-8 leading-relaxed">
-          Yes! Our Starter Design tier and Cloudshot Studio platform are specifically structured for founders needing world-class design to secure seed funding or validate customer demand without breaking their runway.
-        </div>
-      </div>
-
-      <div class="faq-item glass rounded-2xl px-6 py-5 cursor-pointer border border-white/5 hover:border-white/20 transition-all" data-tags="dev existing team engineering">
-        <div class="flex items-center justify-between">
-          <h4 class="font-display text-base font-semibold">Can you integrate with our existing internal engineering team?</h4>
-          <span class="faq-icon text-xl text-blue font-bold">+</span>
-        </div>
-        <div class="faq-answer text-gray-400 text-sm pt-4 pr-8 leading-relaxed">
-          Absolutely. We regularly operate as an embedded SWAT team, handling design systems, AI feature architecture, and frontend polish while co-developing seamlessly alongside your in-house engineers.
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CONTACT ============ -->
-<section id="contact" class="section-pad relative bg-panel/50 border-t border-white/5">
-  <div class="max-w-3xl mx-auto px-6">
-    <div class="text-center mb-12">
-      <div class="inline-block px-3 py-1 rounded-full glass text-xs text-blue mb-4">07 // INITIATE</div>
-      <h2 class="font-display text-4xl lg:text-5xl font-bold mb-4">Start Your Flagship Project</h2>
-      <p class="text-gray-400 text-sm sm:text-base">Ready to craft an extraordinary digital experience? Connect with us or launch instantly in Cloudshot Studio.</p>
-    </div>
-
-    <form id="contactForm" class="glass rounded-3xl p-8 sm:p-10 grid md:grid-cols-2 gap-5 border border-white/10 shadow-2xl">
-      <div>
-        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Your Name</label>
-        <input type="text" id="cName" required placeholder="Alex Mercer" class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3.5 text-sm text-white focus:border-blue outline-none transition-colors">
-      </div>
-      <div>
-        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Work Email</label>
-        <input type="email" id="cEmail" required placeholder="alex@company.com" class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3.5 text-sm text-white focus:border-blue outline-none transition-colors">
-      </div>
-      <div class="md:col-span-2">
-        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Project Summary & Timeline</label>
-        <textarea id="cMessage" rows="4" required placeholder="Tell us about your objectives, desired timeline, or AI features..." class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3.5 text-sm text-white focus:border-blue outline-none transition-colors"></textarea>
-      </div>
-      <div class="md:col-span-2 flex flex-col sm:flex-row gap-4 pt-2">
-        <button type="submit" class="flex-1 btn-primary rounded-xl py-4 text-sm font-semibold text-white shadow-lg shadow-blue/25">
-          <span>Send Inquiry to Studio →</span>
-        </button>
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="flex-1 btn-outline glass text-center rounded-xl py-4 text-sm font-semibold hover:bg-white/10 flex items-center justify-center gap-2">
-          <span>Direct Launch in Cloudshot ↗</span>
-        </a>
-      </div>
-      <p id="formSuccess" class="md:col-span-2 text-center text-emerald-400 text-sm hidden font-medium pt-2">
-        ✓ Inquiry Received! Our senior architects will reach out within 12 hours.
-      </p>
-    </form>
-  </div>
-</section>
-
-<!-- ============ FOOTER ============ -->
-<footer class="relative border-t border-white/10 pt-16 pb-12 bg-ink">
-  <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10 mb-12">
-    <div class="md:col-span-1">
-      <a href="#home" class="font-display text-2xl font-bold tracking-tight flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-blue"></span>
-        SHADOW<span class="text-gradient">.</span>
-      </a>
-      <p class="text-gray-400 text-sm mt-4 leading-relaxed">
-        An elite digital creative & AI studio crafting award-winning interfaces and generative web applications.
-      </p>
-      <div class="mt-6">
-        <a href="https://cloudshot.ai.studio/" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs text-cyan-300 border border-cyan-500/30 hover:border-cyan-400">
-          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> Powered by Cloudshot AI Studio ↗
-        </a>
-      </div>
-    </div>
-
-    <div>
-      <h5 class="font-display text-sm font-bold mb-4 text-white uppercase tracking-wider">Navigation</h5>
-      <ul class="space-y-2.5 text-sm text-gray-400">
-        <li><a href="#about" class="hover:text-white transition-colors">About Studio</a></li>
-        <li><a href="#services" class="hover:text-white transition-colors">AI & Web Services</a></li>
-        <li><a href="#portfolio" class="hover:text-white transition-colors">Selected Work</a></li>
-        <li><a href="#estimator" class="hover:text-white transition-colors text-cyan-400">⚡ Cost Estimator</a></li>
-        <li><a href="#pricing" class="hover:text-white transition-colors">Pricing Plans</a></li>
-      </ul>
-    </div>
-
-    <div>
-      <h5 class="font-display text-sm font-bold mb-4 text-white uppercase tracking-wider">Ecosystem</h5>
-      <ul class="space-y-2.5 text-sm text-gray-400">
-        <li><a href="https://cloudshot.ai.studio/" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">Cloudshot AI Studio <span class="text-[10px] text-blue">NEW</span></a></li>
-        <li><a href="https://cloudshot.ai.studio/" target="_blank" class="hover:text-white transition-colors">Gemini Agent Workflow</a></li>
-        <li><a href="https://cloudshot.ai.studio/" target="_blank" class="hover:text-white transition-colors">Design Tokens & Assets</a></li>
-        <li><a href="#contact" class="hover:text-white transition-colors">Partner Program</a></li>
-      </ul>
-    </div>
-
-    <div>
-      <h5 class="font-display text-sm font-bold mb-4 text-white uppercase tracking-wider">Contact Studio</h5>
-      <ul class="space-y-2.5 text-sm text-gray-400">
-        <li class="flex items-center gap-2"><span>📧</span> hello@shadow-ai.studio</li>
-        <li class="flex items-center gap-2"><span>📍</span> San Francisco // Tokyo // Remote</li>
-        <li class="pt-2">
-          <a href="https://cloudshot.ai.studio/" target="_blank" class="btn-primary rounded-lg px-4 py-2 text-xs font-semibold inline-block text-white">
-            Start Instant Build ↗
+        <div class="social-links">
+          <a href="#" class="social-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </a>
-        </li>
-      </ul>
+          <a href="#" class="social-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="#" class="social-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-400 font-mono">
-    <div class="flex items-center gap-6">
-      <span class="flex items-center gap-2"><span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> All Systems Operational</span>
-      <span class="text-gray-500">v2.0.4-Stable</span>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-icon">S</div>
+          <span>Shadow Tech</span>
+        </div>
+        <p>Engineering the Intelligence of Tomorrow. Building cutting-edge AI solutions for businesses worldwide.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Products</h5>
+        <ul>
+          <li><a href="#">AI Models</a></li>
+          <li><a href="#">AI Agents</a></li>
+          <li><a href="#">API Platform</a></li>
+          <li><a href="#">Analytics</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Research</a></li>
+          <li><a href="#">Community</a></li>
+        </ul>
+      </div>
     </div>
-    <p>© 2026 Shadow AI Digital Agency. All rights reserved. Powered by <a href="https://cloudshot.ai.studio/" target="_blank" class="text-cyan-400 hover:underline">Cloudshot.ai.studio</a>.</p>
-    <div class="flex gap-6 text-gray-500 font-sans">
-      <a href="https://cloudshot.ai.studio/" target="_blank" class="hover:text-white transition-colors">Privacy Policy</a>
-      <a href="https://cloudshot.ai.studio/" target="_blank" class="hover:text-white transition-colors">Terms of Service</a>
-      <a href="https://cloudshot.ai.studio/" target="_blank" class="hover:text-white transition-colors">Security</a>
+    <div class="footer-bottom">
+      <p>© 2024 Shadow Tech AI. All rights reserved.</p>
+      <div style="display:flex;gap:24px">
+        <a href="#" style="color:var(--text-dim);text-decoration:none;font-size:13px">Privacy Policy</a>
+        <a href="#" style="color:var(--text-dim);text-decoration:none;font-size:13px">Terms of Service</a>
+      </div>
     </div>
   </div>
 </footer>
 
-<!-- Case Study Interactive Modal -->
-<div id="caseStudyModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
-  <div class="modal-content glass rounded-3xl p-8 sm:p-10 max-w-2xl w-full border border-white/20 relative shadow-2xl max-h-[90vh] overflow-y-auto">
-    <button onclick="closeCaseStudy()" class="absolute top-5 right-6 text-gray-400 hover:text-white text-2xl font-bold">✕</button>
-    <div id="modalBody">
-      <!-- Dynamically filled by JS -->
+<!-- Chat Widget -->
+<div class="chat-widget">
+  <div class="chat-window" id="chat-window">
+    <div class="chat-header">
+      <div class="chat-avatar">S</div>
+      <div>
+        <h4>Shadow Assistant</h4>
+        <p>Online • Ready to help</p>
+      </div>
     </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg bot">Hello! I'm Shadow Assistant. How can I help you today?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="Type your message..." id="chat-input">
+      <button onclick="sendMessage()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="chat-toggle" onclick="toggleChat()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   </div>
 </div>
 
-<!-- Hidden React Root (for Vite safety) -->
-<div id="root" style="display:none;"></div>
+<!-- Back to Top -->
+<div class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-/* =========================================================
-   SHADOW AI & CLOUDSHOT — Interactive Studio Scripts
-   ========================================================= */
+// ==================== THREE.JS SCENE ====================
+const canvas = document.getElementById('bg-canvas');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+camera.position.z = 5;
 
-// Project Case Study Data
-const caseStudies = {
-  northwind: {
-    title: "Northwind AI Banking Portal",
-    category: "FINTECH & GENAI ADVISORY",
-    metrics: ["+42% Onboarding Completion", "2.4s Average Load Time", "$1.2B Managed Assets"],
-    desc: "We engineered an autonomous wealth advisory interface powered by Gemini streaming models. Customers receive instant portfolio risk analysis, tax-loss harvesting recommendations, and interactive D3 visualization charts.",
-    tech: ["React 19", "Gemini 2.5 API", "Tailwind CSS", "Node.js Microservices"],
-    cta: "https://cloudshot.ai.studio/"
-  },
-  orbital: {
-    title: "Orbital AI Analytics Engine",
-    category: "ENTERPRISE SAAS · DATA CANVAS",
-    metrics: ["3.2x Engineering Velocity", "10M+ Logs Processed/sec", "FWA Award Winner"],
-    desc: "Orbital needed to turn complex unstructured cloud logs into intuitive 3D visual clusters. We utilized Three.js WebGL rendering coupled with custom vector search to let enterprise analysts query their data using natural language.",
-    tech: ["TypeScript", "Three.js WebGL", "Vite", "Vector Embeddings"],
-    cta: "https://cloudshot.ai.studio/"
-  },
-  halcyon: {
-    title: "Halcyon Precision Genomics",
-    category: "HEALTHCARE · REAL-TIME BIOMETRICS",
-    metrics: ["99.99% Diagnostic Uptime", "HIPAA Certified Architecture", "34% Doctor Time Saved"],
-    desc: "Designed and built an advanced patient biometric telemetry dashboard for clinical geneticists. Features real-time websocket data streaming, interactive gene sequence zooming, and automated AI diagnostic summarization.",
-    tech: ["Next.js", "WebSockets", "D3.js", "Tailwind CSS"],
-    cta: "https://cloudshot.ai.studio/"
-  }
-};
+// Lighting
+const ambientLight = new THREE.AmbientLight(0x0a0a1a, 0.5);
+scene.add(ambientLight);
+const cyanLight = new THREE.PointLight(0x00e5ff, 2, 20);
+cyanLight.position.set(5, 3, 5);
+scene.add(cyanLight);
+const purpleLight = new THREE.PointLight(0x8b5cf6, 2, 20);
+purpleLight.position.set(-5, -3, 5);
+scene.add(purpleLight);
+const pinkLight = new THREE.PointLight(0xff0080, 1, 15);
+pinkLight.position.set(0, 5, -5);
+scene.add(pinkLight);
 
-function openCaseStudy(id) {
-  const data = caseStudies[id];
-  if (!data) return;
-  const body = document.getElementById('modalBody');
-  body.innerHTML = `
-    <span class="px-3 py-1 rounded-full bg-blue/20 text-blue text-xs font-semibold uppercase tracking-wider">${data.category}</span>
-    <h3 class="font-display text-3xl font-bold mt-3 mb-4">${data.title}</h3>
-    <p class="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">${data.desc}</p>
-    
-    <div class="grid grid-cols-3 gap-3 mb-6 p-4 glass rounded-2xl border border-white/10 text-center">
-      ${data.metrics.map(m => `<div><p class="text-sm sm:text-base font-bold text-gradient">${m}</p></div>`).join('')}
-    </div>
+// Core - Icosahedron
+const coreGeo = new THREE.IcosahedronGeometry(1.2, 2);
+const coreMat = new THREE.MeshPhysicalMaterial({
+  color: 0x001122,
+  emissive: 0x00e5ff,
+  emissiveIntensity: 0.3,
+  transmission: 0.9,
+  roughness: 0.1,
+  thickness: 1,
+  metalness: 0.1,
+  clearcoat: 1
+});
+const core = new THREE.Mesh(coreGeo, coreMat);
+scene.add(core);
 
-    <div class="mb-8">
-      <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Tech Stack & Architecture</p>
-      <div class="flex flex-wrap gap-2">
-        ${data.tech.map(t => `<span class="px-3 py-1 rounded-lg bg-white/10 text-xs text-gray-200">${t}</span>`).join('')}
-      </div>
-    </div>
+// Wireframe overlay
+const wireGeo = new THREE.IcosahedronGeometry(1.5, 1);
+const wireMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, wireframe: true, transparent: true, opacity: 0.3 });
+const wireframe = new THREE.Mesh(wireGeo, wireMat);
+scene.add(wireframe);
 
-    <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
-      <a href="${data.cta}" target="_blank" class="flex-1 btn-primary text-center rounded-xl py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue/20">
-        <span>Build Similar in Cloudshot Studio ↗</span>
-      </a>
-      <button onclick="closeCaseStudy()" class="btn-outline glass rounded-xl px-6 py-3.5 text-sm font-medium">Close Case Study</button>
-    </div>
-  `;
-  document.getElementById('caseStudyModal').classList.add('show');
-}
+// Outer wireframe
+const outerWireGeo = new THREE.IcosahedronGeometry(2, 1);
+const outerWireMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.15 });
+const outerWireframe = new THREE.Mesh(outerWireGeo, outerWireMat);
+scene.add(outerWireframe);
 
-function closeCaseStudy() {
-  document.getElementById('caseStudyModal').classList.remove('show');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  gsap.registerPlugin(ScrollTrigger);
-
-  /* ---------- PRELOADER ---------- */
-  const barFill = document.getElementById('bar-fill');
-  let progress = 0;
-  const loadInt = setInterval(() => {
-    progress += Math.random() * 25;
-    if (progress >= 100) {
-      progress = 100;
-      clearInterval(loadInt);
-      barFill.style.width = '100%';
-      gsap.to('#preloader', {
-        opacity: 0, duration: 0.7, delay: 0.2, ease: 'power2.out',
-        onComplete: () => { document.getElementById('preloader').style.display = 'none'; }
-      });
-    } else { barFill.style.width = progress + '%'; }
-  }, 90);
-
-  /* ---------- LENIS SMOOTH SCROLL ---------- */
-  try {
-    const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
-    function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
-    requestAnimationFrame(raf);
-  } catch(e) {}
-
-  /* ---------- CUSTOM CURSOR ---------- */
-  const dot = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  window.addEventListener('mousemove', (e) => {
-    mx = e.clientX; my = e.clientY;
-    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
-  });
-  (function animRing(){
-    rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
-    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-    requestAnimationFrame(animRing);
-  })();
-  document.querySelectorAll('a, button, input, textarea, .project-item').forEach(el => {
-    el.addEventListener('mouseenter', () => ring.classList.add('hovered'));
-    el.addEventListener('mouseleave', () => ring.classList.remove('hovered'));
-  });
-
-  /* ---------- NAVBAR & SCROLL PROGRESS ---------- */
-  const nav = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('glass', window.scrollY > 30);
-    nav.classList.toggle('py-3', window.scrollY > 30);
-    const h = document.documentElement;
-    const scrolled = (h.scrollTop || document.body.scrollTop);
-    const height = h.scrollHeight - h.clientHeight;
-    document.getElementById('scroll-progress').style.width = (scrolled / height) * 100 + '%';
-  });
-
-  /* ---------- MOBILE MENU ---------- */
-  const menuBtn = document.getElementById('menuBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  menuBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('hidden');
-    mobileMenu.classList.toggle('flex');
-  });
-  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    mobileMenu.classList.add('hidden'); mobileMenu.classList.remove('flex');
-  }));
-
-  /* ---------- PROJECT FILTERING ---------- */
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const projects = document.querySelectorAll('.project-item');
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const f = btn.getAttribute('data-filter');
-      projects.forEach(p => {
-        const cat = p.getAttribute('data-category');
-        if (f === 'all' || cat.includes(f)) {
-          p.style.display = 'block';
-          gsap.fromTo(p, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.4 });
-        } else {
-          p.style.display = 'none';
-        }
-      });
-    });
-  });
-
-  /* ---------- INTERACTIVE ESTIMATOR LOGIC ---------- */
-  let basePrice = 4500;
-  let speedMult = 1.0;
-  let scaleAdd = 1000;
-  let scopeName = "UI/UX & Design System";
-  let timeName = "6-8 Weeks";
-
-  function updateEstimate() {
-    const total = Math.round((basePrice + scaleAdd) * speedMult);
-    document.getElementById('estTotal').textContent = '$' + total.toLocaleString();
-    document.getElementById('estScopeLabel').textContent = scopeName;
-    document.getElementById('estTimeLabel').textContent = timeName;
-  }
-
-  document.querySelectorAll('.est-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.est-btn').forEach(b => {
-        b.classList.remove('active', 'border-blue/50', 'bg-blue/10');
-        b.classList.add('border-white/10');
-      });
-      btn.classList.add('active', 'border-blue/50', 'bg-blue/10');
-      btn.classList.remove('border-white/10');
-      basePrice = parseInt(btn.getAttribute('data-price'), 10);
-      scopeName = btn.getAttribute('data-name');
-      updateEstimate();
-    });
-  });
-
-  document.querySelectorAll('.speed-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.speed-btn').forEach(b => {
-        b.classList.remove('active', 'border-blue/50', 'bg-blue/10');
-        b.classList.add('border-white/10');
-      });
-      btn.classList.add('active', 'border-blue/50', 'bg-blue/10');
-      btn.classList.remove('border-white/10');
-      speedMult = parseFloat(btn.getAttribute('data-mult'));
-      timeName = btn.getAttribute('data-time');
-      updateEstimate();
-    });
-  });
-
-  const scaleInput = document.getElementById('estScale');
-  scaleInput.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value, 10);
-    scaleAdd = val * 20;
-    document.getElementById('scaleValLabel').textContent = `${val}k Users (+ $${scaleAdd.toLocaleString()})`;
-    updateEstimate();
-  });
-  updateEstimate();
-
-  /* ---------- PRICING TOGGLE ---------- */
-  const btnMonthly = document.getElementById('toggleMonthly');
-  const btnYearly = document.getElementById('toggleYearly');
-  const priceVals = document.querySelectorAll('.price-val');
-  btnMonthly.addEventListener('click', () => {
-    btnMonthly.className = "px-5 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-blue to-violet text-white transition-all";
-    btnYearly.className = "px-5 py-2 rounded-full text-xs font-semibold text-gray-400 hover:text-white transition-all flex items-center gap-1.5";
-    priceVals.forEach(el => el.textContent = el.getAttribute('data-monthly'));
-  });
-  btnYearly.addEventListener('click', () => {
-    btnYearly.className = "px-5 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-blue to-violet text-white transition-all flex items-center gap-1.5";
-    btnMonthly.className = "px-5 py-2 rounded-full text-xs font-semibold text-gray-400 hover:text-white transition-all";
-    priceVals.forEach(el => el.textContent = el.getAttribute('data-yearly'));
-  });
-
-  /* ---------- FAQ ACCORDION & SEARCH ---------- */
-  document.querySelectorAll('.faq-item').forEach(item => {
-    item.addEventListener('click', () => {
-      const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-      if (!isOpen) item.classList.add('open');
-    });
-  });
-  const faqSearch = document.getElementById('faqSearch');
-  faqSearch.addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase().trim();
-    document.querySelectorAll('.faq-item').forEach(item => {
-      const text = item.textContent.toLowerCase() + " " + (item.getAttribute('data-tags') || "");
-      item.style.display = text.includes(q) ? 'block' : 'none';
-    });
-  });
-
-  /* ---------- CONTACT FORM ---------- */
-  document.getElementById('contactForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    document.getElementById('formSuccess').classList.remove('hidden');
-    e.target.reset();
-    setTimeout(() => document.getElementById('formSuccess').classList.add('hidden'), 5000);
-  });
-
-  /* ---------- THREE.JS BACKGROUND ---------- */
-  initThree();
+// Rings
+const rings = [];
+const ringConfigs = [
+  { radius: 2.5, tube: 0.015, color: 0x00e5ff, tilt: [Math.PI/2, 0, 0], speed: 0.002 },
+  { radius: 3, tube: 0.01, color: 0x8b5cf6, tilt: [Math.PI/3, Math.PI/4, 0], speed: -0.0015 },
+  { radius: 3.5, tube: 0.008, color: 0xff0080, tilt: [Math.PI/4, Math.PI/2, Math.PI/6], speed: 0.001 }
+];
+ringConfigs.forEach(cfg => {
+  const geo = new THREE.TorusGeometry(cfg.radius, cfg.tube, 16, 100);
+  const mat = new THREE.MeshBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.5 });
+  const ring = new THREE.Mesh(geo, mat);
+  ring.rotation.set(...cfg.tilt);
+  ring.userData.speed = cfg.speed;
+  rings.push(ring);
+  scene.add(ring);
 });
 
-function initThree() {
-  const canvas = document.getElementById('bg-canvas');
-  if (!window.THREE || !canvas) return;
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 28;
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-  const count = 600;
-  const geo = new THREE.BufferGeometry();
-  const pos = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    pos[i * 3] = (Math.random() - 0.5) * 75;
-    pos[i * 3 + 1] = (Math.random() - 0.5) * 75;
-    pos[i * 3 + 2] = (Math.random() - 0.5) * 75;
-  }
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const mat = new THREE.PointsMaterial({ color: 0x4F8BFF, size: 0.2, transparent: true, opacity: 0.65 });
-  const points = new THREE.Points(geo, mat);
-  scene.add(points);
-
-  const geo2 = geo.clone();
-  const mat2 = new THREE.PointsMaterial({ color: 0x06B6D4, size: 0.15, transparent: true, opacity: 0.4 });
-  const points2 = new THREE.Points(geo2, mat2);
-  points2.rotation.set(0.5, 0.3, 0);
-  scene.add(points2);
-
-  let mx = 0, my = 0;
-  window.addEventListener('mousemove', (e) => {
-    mx = (e.clientX / window.innerWidth - 0.5);
-    my = (e.clientY / window.innerHeight - 0.5);
-  });
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
-  function animate() {
-    requestAnimationFrame(animate);
-    points.rotation.y += 0.0007;
-    points.rotation.x += 0.0003;
-    points2.rotation.y -= 0.0005;
-    camera.position.x += (mx * 5 - camera.position.x) * 0.02;
-    camera.position.y += (-my * 5 - camera.position.y) * 0.02;
-    camera.lookAt(scene.position);
-    renderer.render(scene, camera);
-  }
-  animate();
+// Neural Nodes
+const nodeCount = 60;
+const nodeGeo = new THREE.SphereGeometry(0.03, 8, 8);
+const nodes = [];
+const nodeMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff });
+for(let i = 0; i < nodeCount; i++) {
+  const phi = Math.acos(-1 + (2 * i) / nodeCount);
+  const theta = Math.sqrt(nodeCount * Math.PI) * phi;
+  const x = Math.cos(theta) * Math.sin(phi) * 2.2;
+  const y = Math.sin(theta) * Math.sin(phi) * 2.2;
+  const z = Math.cos(phi) * 2.2;
+  const node = new THREE.Mesh(nodeGeo, nodeMat.clone());
+  node.position.set(x, y, z);
+  node.userData.phase = Math.random() * Math.PI * 2;
+  nodes.push(node);
+  scene.add(node);
 }
+
+// Particles
+const particleCount = 2000;
+const particleGeo = new THREE.BufferGeometry();
+const positions = new Float32Array(particleCount * 3);
+for(let i = 0; i < particleCount * 3; i++) {
+  positions[i] = (Math.random() - 0.5) * 50;
+}
+particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const particleMat = new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.03, transparent: true, opacity: 0.6 });
+const particles = new THREE.Points(particleGeo, particleMat);
+scene.add(particles);
+
+// Mouse tracking
+const mouse = { x: 0, y: 0 };
+document.addEventListener('mousemove', (e) => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+});
+
+// Animation
+let time = 0;
+function animateScene() {
+  requestAnimationFrame(animateScene);
+  time += 0.01;
+
+  // Core rotation
+  core.rotation.x += 0.003;
+  core.rotation.y += 0.005;
+  core.material.emissiveIntensity = 0.2 + Math.sin(time * 2) * 0.15;
+  
+  wireframe.rotation.x -= 0.001;
+  wireframe.rotation.y += 0.003;
+  outerWireframe.rotation.y -= 0.001;
+  outerWireframe.rotation.z += 0.001;
+
+  // Rings rotation
+  rings.forEach(ring => {
+    ring.rotation.z += ring.userData.speed;
+  });
+
+  // Nodes pulsing
+  nodes.forEach((node, i) => {
+    const scale = 1 + Math.sin(time * 3 + node.userData.phase) * 0.3;
+    node.scale.setScalar(scale);
+    node.material.color.setHex(Math.sin(time + i) > 0 ? 0x00e5ff : 0x8b5cf6);
+  });
+
+  // Particles drift
+  particles.rotation.y += 0.0002;
+  particles.rotation.x += 0.0001;
+
+  // Camera follows mouse slightly
+  camera.position.x += (mouse.x * 1.5 - camera.position.x) * 0.02;
+  camera.position.y += (mouse.y * 1 - camera.position.y) * 0.02;
+  camera.lookAt(0, 0, 0);
+
+  // Lights follow mouse
+  cyanLight.position.x += (mouse.x * 4 - cyanLight.position.x) * 0.05;
+  cyanLight.position.y += (mouse.y * 3 - cyanLight.position.y) * 0.05;
+
+  renderer.render(scene, camera);
+}
+animateScene();
+
+// Resize handler
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ==================== UI INTERACTIONS ====================
+
+// Loader
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.body.classList.remove('loading');
+  }, 1500);
+});
+
+// Custom cursor (desktop / fine-pointer devices only)
+const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const cursor = document.querySelector('.cursor');
+const cursorDot = document.querySelector('.cursor-dot');
+
+if (isFinePointer) {
+  let cursorX = window.innerWidth / 2, cursorY = window.innerHeight / 2;
+  let dotX = cursorX, dotY = cursorY;
+  let cursorActive = false;
+
+  cursor.style.opacity = '0';
+  cursorDot.style.opacity = '0';
+
+  document.addEventListener('mousemove', (e) => {
+    cursorX = e.clientX;
+    cursorY = e.clientY;
+    if (!cursorActive) {
+      cursorActive = true;
+      cursor.style.opacity = '1';
+      cursorDot.style.opacity = '1';
+      dotX = cursorX;
+      dotY = cursorY;
+    }
+  });
+
+  document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    cursorDot.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', () => {
+    cursor.style.opacity = '1';
+    cursorDot.style.opacity = '1';
+  });
+
+  function animateCursor() {
+    dotX += (cursorX - dotX) * 0.2;
+    dotY += (cursorY - dotY) * 0.2;
+    cursor.style.transform = `translate3d(${cursorX - 10}px, ${cursorY - 10}px, 0)`;
+    cursorDot.style.transform = `translate3d(${dotX - 3}px, ${dotY - 3}px, 0)`;
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  // Cursor hover effects
+  document.querySelectorAll('a, button, input, textarea, .service-card, .platform-card, .pricing-card, .blog-card, .portfolio-card, .filter-tab').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+} else {
+  cursor.style.display = 'none';
+  cursorDot.style.display = 'none';
+}
+
+// Navigation scroll
+const nav = document.querySelector('.nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+  document.querySelector('.scroll-progress').style.width = (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100) + '%';
+  document.querySelector('.back-to-top').classList.toggle('visible', window.scrollY > 500);
+});
+
+// Mobile nav
+const mobileToggle = document.querySelector('.mobile-toggle');
+const mobileNav = document.querySelector('.mobile-nav');
+mobileToggle.addEventListener('click', () => {
+  mobileNav.classList.toggle('open');
+});
+mobileNav.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => mobileNav.classList.remove('open'));
+});
+
+// Active nav link
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    if(scrollY >= sectionTop - 200) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if(link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+
+// Reveal on scroll
+const revealElements = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+revealElements.forEach(el => revealObserver.observe(el));
+
+// Counter animation
+const counters = document.querySelectorAll('[data-count]');
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      const target = parseInt(entry.target.dataset.count);
+      let count = 0;
+      const increment = target / 60;
+      const update = () => {
+        count += increment;
+        if(count < target) {
+          entry.target.textContent = Math.ceil(count);
+          requestAnimationFrame(update);
+        } else {
+          entry.target.textContent = target;
+        }
+      };
+      update();
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObserver.observe(c));
+
+// Platform search & filter
+const searchInput = document.getElementById('platform-search');
+const filterTabs = document.querySelectorAll('.filter-tab');
+const platformCards = document.querySelectorAll('.platform-card');
+
+searchInput.addEventListener('input', filterCards);
+filterTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    filterTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    filterCards();
+  });
+});
+
+function filterCards() {
+  const query = searchInput.value.toLowerCase();
+  const activeFilter = document.querySelector('.filter-tab.active').dataset.filter;
+  platformCards.forEach(card => {
+    const matchesSearch = card.querySelector('h4').textContent.toLowerCase().includes(query) || 
+                          card.querySelector('p').textContent.toLowerCase().includes(query);
+    const matchesFilter = activeFilter === 'all' || card.dataset.category === activeFilter;
+    card.style.display = matchesSearch && matchesFilter ? 'block' : 'none';
+  });
+}
+
+// Chat widget
+function toggleChat() {
+  document.getElementById('chat-window').classList.toggle('open');
+}
+
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  
+  const messages = document.getElementById('chat-messages');
+  messages.innerHTML += `<div class="chat-msg user">${msg}</div>`;
+  input.value = '';
+  
+  setTimeout(() => {
+    const responses = [
+      "That's a great question! Our AI platform can definitely help with that.",
+      "I'd be happy to connect you with our team to discuss your needs in detail.",
+      "Shadow Tech offers custom solutions tailored to your requirements. Want to schedule a demo?",
+      "Our AI models are among the most advanced in the industry. Can I share more details?"
+    ];
+    const response = responses[Math.floor(Math.random() * responses.length)];
+    messages.innerHTML += `<div class="chat-msg bot">${response}</div>`;
+    messages.scrollTop = messages.scrollHeight;
+  }, 1000);
+}
+
+document.getElementById('chat-input').addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') sendMessage();
+});
+
+// Contact form
+document.getElementById('contact-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = 'Sending...';
+  btn.disabled = true;
+  
+  setTimeout(() => {
+    btn.innerHTML = '✓ Message Sent!';
+    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+    
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.background = '';
+      btn.disabled = false;
+      e.target.reset();
+    }, 2000);
+  }, 1500);
+});
+
+// 3D card hover effect
+document.querySelectorAll('.service-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 20;
+    const rotateY = (centerX - x) / 20;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+  });
+  
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if(target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
 </script>
 </body>
 </html>
